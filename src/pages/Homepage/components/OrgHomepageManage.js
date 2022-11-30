@@ -11,7 +11,9 @@ import { Form, message } from 'antd';
 export default () => {
   const [form] = Form.useForm();
   const handleImgUpload = (file, field) => {
+    console.log(file);
     fileUpload(file).then((res) => {
+      console.log(res);
       form.setFieldsValue({
         [field]: [
           Object.assign(file, {

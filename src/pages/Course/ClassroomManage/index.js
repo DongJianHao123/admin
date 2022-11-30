@@ -3,7 +3,7 @@ import {
   fetchClassroomList,
   updateClassroomStatus,
 } from '@/services/course';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   PageContainer,
   ProForm,
@@ -11,10 +11,12 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import { useRequest, useSearchParams } from '@umijs/max';
-import { Button, message, Switch } from 'antd';
+import { Button, message, Switch, Upload } from 'antd';
 import { useRef, useState } from 'react';
 import { history } from 'umi';
+import BatchImportProps from '../components/BatchImportProps';
 import ClassroomManageForm from '../components/ClassroomManageForm';
+import '../../../style/classroomManage.less';
 
 const columns = (openDrawer, handleStatusChange, deleteRow) =>
   [
@@ -135,6 +137,7 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
 export default () => {
   const [searchParams] = useSearchParams();
   const [drawerProps, setDrawerProps] = useState({ visible: false });
+  const [importProps, setImportProps] = useState({ visible: false });
   const tableRef = useRef();
   const { run: runUpdateStatus } = useRequest(updateClassroomStatus, {
     manual: true,
@@ -161,6 +164,7 @@ export default () => {
         title: '课堂管理',
         onBack: () => history.back(),
       }}
+      className="classroom-manage"
     >
       <ProForm
         readonly
@@ -197,13 +201,16 @@ export default () => {
         }
         scroll={{ y: 400 }}
         toolBarRender={() => (
-          <Button
-            onClick={() => setDrawerProps({ visible: true })}
-            icon={<PlusOutlined />}
-            type="primary"
-          >
-            新增
-          </Button>
+          <div className="table-btn">
+            <BatchImportProps handleStatusChange={handleStatusChange} />
+            <Button
+              onClick={() => setDrawerProps({ visible: true })}
+              icon={<PlusOutlined />}
+              type="primary"
+            >
+              新增
+            </Button>
+          </div>
         )}
       />
       <ClassroomManageForm
