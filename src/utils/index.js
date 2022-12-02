@@ -38,7 +38,11 @@ export function getFileUploadToken(bucketName) {
 /**
  * 文件上传到七牛云
  */
-export async function fileUpload(file, bucketName = 'maodouketang') {
+export async function fileUpload(
+  file,
+  progressCallback,
+  bucketName = 'maodouketang',
+) {
   return new Promise((resolve, reject) => {
     const token = getFileUploadToken(bucketName);
     const config = {
@@ -50,6 +54,10 @@ export async function fileUpload(file, bucketName = 'maodouketang') {
     observable.subscribe({
       error: (err) => reject(err),
       complete: (res) => resolve(res),
+      next: (res) => {
+        progressCallback &&
+          progressCallback(res.total.percent.toFixed(0), file.index);
+      },
     });
   });
 }
@@ -95,4 +103,23 @@ export const secondsParse = (seconds) => {
     (mins && `${mins}分`) || '',
     (secs && `${secs}秒`) || '',
   ].join('');
+};
+
+//节流
+export const throttled = (fn, delay) => {
+  let timer = null;
+  let starttime = Date.now();
+  return function () {
+    let curTime = Date.now(); // 当前时间
+    let remaining = delay - (curTime - starttime); // 从上一次到现在，还剩下多少多余时间
+    let context = this;
+    let args = arguments;
+    clearTimeout(timer);
+    if (remaining <= 0) {
+      fn.apply(context, args);
+      starttime = Date.now();
+    } else {
+      timer = setTimeout(fn, remaining);
+    }
+  };
 };

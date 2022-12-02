@@ -202,7 +202,7 @@ export default () => {
         scroll={{ y: 400 }}
         toolBarRender={() => (
           <div className="table-btn">
-            <BatchImportProps handleStatusChange={handleStatusChange} />
+            <BatchImportProps reloadData={tableRef.current.reload} />
             <Button
               onClick={() => setDrawerProps({ visible: true })}
               icon={<PlusOutlined />}

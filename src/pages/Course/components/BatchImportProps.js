@@ -1,5 +1,12 @@
+import U from '@/common/U';
+import { createClassroom } from '@/services/course';
 import { fileUpload } from '@/utils';
-import { PlusOutlined } from '@ant-design/icons';
+import {
+  PlaySquareOutlined,
+  PlusOutlined,
+  VerticalAlignBottomOutlined,
+  VerticalAlignTopOutlined,
+} from '@ant-design/icons';
 import {
   ModalForm,
   ProForm,
@@ -8,215 +15,350 @@ import {
   ProFormText,
   ProTable,
 } from '@ant-design/pro-components';
+import { useSearchParams } from '@umijs/max';
 import {
   Button,
   DatePicker,
   Form,
   message,
+  Popconfirm,
+  Progress,
   Space,
   Switch,
   Table,
   Upload,
 } from 'antd';
-import { useState } from 'react';
-
-const { RangePicker } = DatePicker;
-const valueEnum = {
-  0: 'close',
-  1: 'running',
-  2: 'online',
-  3: 'error',
-};
-
-const ProcessMap = {
-  close: 'normal',
-  running: 'active',
-  online: 'success',
-  error: 'exception',
-};
-
-const tableListDataSource = [];
-
-const creators = ['付小小', '曲丽丽', '林东东', '陈帅帅', '兼某某'];
-
-for (let i = 0; i < 5; i += 1) {
-  tableListDataSource.push({
-    key: i,
-    name: 'AppName',
-    containers: Math.floor(Math.random() * 20),
-    callNumber: Math.floor(Math.random() * 2000),
-    progress: Math.ceil(Math.random() * 100) + 1,
-    creator: creators[Math.floor(Math.random() * creators.length)],
-    status: valueEnum[Math.floor(Math.random() * 10) % 4],
-    createdAt: Date.now() - Math.floor(Math.random() * 100000),
-    memo:
-      i % 2 === 1
-        ? '很长很长很长很长很长很长很长的文字要展示但是要留下尾巴'
-        : '简短备注文案',
-  });
-}
-const index = 0;
-const columns = [
-  {
-    title: '序号',
-    width: 80,
-    dataIndex: 'index',
-    align: 'center',
-    render: (txt, item, index) => {
-      return <div>{index + 1}</div>;
-    },
-  },
-  {
-    title: '课堂名称',
-    width: 120,
-    align: 'center',
-    dataIndex: 'name',
-    render: (txt = '', item, index) => {
-      let _txt = txt.replace('.mp4', '');
-      return <div>{_txt}</div>;
-    },
-  },
-  {
-    title: '时长',
-    width: 120,
-    align: 'center',
-    // dataIndex: 'callNumber',
-    render: () => '未知',
-  },
-  {
-    title: '大小',
-    width: 120,
-    align: 'center',
-    dataIndex: 'size',
-    // dataIndex: 'callNumber',
-    render: (size) => {
-      let res = (size / 1024 / 1024).toFixed(2);
-      return (!isNaN(res) ? res : '0') + 'MB';
-    },
-  },
-
-  {
-    title: '上架/下架',
-    dataIndex: 'status',
-    align: 'center',
-    width: 50,
-    render: (val, row) => (
-      <Switch
-        // onChange={(checked) => handleStatusChange(row, checked ? '1' : '0')}
-        defaultChecked={val === '1'}
-      />
-    ),
-  },
-  {
-    title: '预览',
-    dataIndex: 'videoUrl',
-    width: 60,
-    align: 'center',
-    render: (url) => {
-      return <div>预览</div>;
-    },
-  },
-  {
-    title: '执行进度',
-    dataIndex: 'progress',
-    width: 150,
-    align: 'center',
-    valueType: (item) => ({
-      type: 'progress',
-      // status: ProcessMap['running'],
-    }),
-  },
-  {
-    title: ' ',
-    width: 80,
-    key: 'option',
-    align: 'center',
-    valueType: 'option',
-    fixed: 'right',
-    render: () => [<a key="link">复制链接</a>],
-  },
-];
-
-const waitTime = (time = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
-let fileData = [];
-
-const fileinputChange = (event) => {
-  fileData = event.target.files;
-  console.log(fileData);
-  // 获取到的文件 fileData
-  // if(fileData){
-  //   this.setState({ fileData, })
-  //   const formdata = new FormData();
-  //   formdata.append("wordType",3);
-  //   formdata.append("file",fileData);
-  //   this.send(formdata)
-  // }
-};
+import Input from 'antd/lib/input/Input';
+import copy from 'copy-to-clipboard';
+import { useCallback, useEffect, useState } from 'react';
 
 export default (props) => {
-  const [videos, setVideos] = useState([]);
-  const [fileList, setFileList] = useState([]);
-  let { handleStatusChange } = props;
-  const btnClick = () => {
-    let btn = document.getElementById('upload-btn');
-    // console.log(btn);
+  let { reloadData } = props;
+  const columns = [
+    {
+      title: '序号',
+      width: 50,
+      dataIndex: 'index',
+      align: 'center',
+      render: (txt, item, index) => {
+        return <div>{index + 1}</div>;
+      },
+    },
+    {
+      title: '课堂名称',
+      width: 100,
+      align: 'center',
+      dataIndex: 'className',
+      editable: true,
+      render: (txt, item, index) => {
+        return (
+          <Input
+            required
+            onChange={(e) => {
+              modClassRoomList('className', e.target.value, index);
+              console.log(e);
+            }}
+            value={txt}
+          />
+        );
+      },
+    },
+    {
+      title: '时长',
+      width: 80,
+      dataIndex: 'duration',
+      align: 'center',
+      render: () => '--',
+    },
+    {
+      title: '大小',
+      width: 80,
+      align: 'center',
+      dataIndex: 'size',
+      render: (size) => {
+        let res = (size / 1024 / 1024).toFixed(2);
+        return (!isNaN(res) ? res : '0') + 'MB';
+      },
+    },
+
+    {
+      title: '上架/下架',
+      dataIndex: 'status',
+      align: 'center',
+      width: 50,
+      render: (val, row, index) => (
+        <Switch
+          onChange={(checked) => handleStatusChange(index, checked ? '1' : '0')}
+          checked={val === '1'}
+        />
+      ),
+    },
+    {
+      title: '预览',
+      dataIndex: 'videoUrl',
+      width: 60,
+      align: 'center',
+      render: (url) => {
+        return url === '-' ? (
+          <span style={{ color: 'grey' }}>预览</span>
+        ) : (
+          <a href={url} target="_blank" rel="noreferrer">
+            <PlaySquareOutlined type="primary" style={{ fontSize: '28px' }} />
+          </a>
+        );
+      },
+    },
+    {
+      title: '执行进度',
+      dataIndex: 'progress',
+      width: 150,
+      fixed: 'right',
+      align: 'center',
+      render: (progress, item) => <Progress percent={item.progress} />,
+    },
+    {
+      title: ' ',
+      width: 50,
+      dataIndex: 'videoUrl',
+      align: 'center',
+      fixed: 'right',
+      render: (videoUrl, item, index) => {
+        console.log(U.str.isEmpty(videoUrl));
+        console.log(videoUrl);
+        return videoUrl === '-' ? (
+          <span style={{ color: 'grey' }}>---</span>
+        ) : (
+          <a
+            key="link"
+            onClick={() => {
+              copy(videoUrl);
+              console.log(videoUrl);
+            }}
+          >
+            复制链接
+          </a>
+        );
+      },
+    },
+  ];
+
+  let [classRoomList, setClassRoomList] = useState([]);
+  let [importSuccess, setImportSuccess] = useState(0);
+  let [importErr, setImportErr] = useState(0);
+  const [loading, setLoading] = useState(false);
+  let [progressObj, setProgressObj] = useState({ index: -1, arr: [] });
+
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => setClassRoomList(classRoomList), [classRoomList]);
+
+  const modClassRoomList = (filed, value, index) => {
+    classRoomList[index][filed] = value;
+    setClassRoomList([...classRoomList]);
+  };
+
+  const btnClick = (id) => {
+    let btn = document.getElementById(id);
     btn.click();
   };
+
+  const handleStatusChange = (index, val) => {
+    classRoomList[index].status = val;
+    setClassRoomList([...classRoomList]);
+    console.log(classRoomList);
+  };
+
+  const batchStatus = (selectedRowKeys, val) => {
+    // eslint-disable-next-line array-callback-return
+    selectedRowKeys.map((item) => {
+      handleStatusChange(item, val);
+    });
+  };
+
+  const handleTableDelete = (selectedRowKeys) => {
+    // eslint-disable-next-line array-callback-return
+    let _classRoomList = classRoomList.filter(
+      (item, index) => !selectedRowKeys.includes(index),
+    );
+    setClassRoomList(_classRoomList);
+    message.success(`成功删除${selectedRowKeys.length}条数据`);
+  };
+
+  const progressCallback = (progress, index) => {
+    progressObj.index = index;
+    progressObj.arr[index] = progress;
+    setProgressObj({ ...progressObj });
+    console.log(progressObj);
+    // updateData(classRoomList[index], index)
+    // console.log(progress);
+  };
+
+  useEffect(() => {
+    console.log('有变化');
+    console.log(progressObj);
+    if (classRoomList.length > 0 && progressObj.index > -1) {
+      classRoomList[progressObj.index].progress =
+        progressObj.arr[progressObj.index];
+      setClassRoomList([...classRoomList]);
+    }
+  }, [progressObj]);
+
   const handleUploadAction = (e) => {
+    let _index = classRoomList.length;
     console.log(e);
-    videos.push(e);
-    setVideos(videos);
+    e.index = _index;
     let { name, size, type } = e;
-    fileList.push({
-      name,
+    classRoomList.push({
+      index: _index,
+      className: name.substring(0, name.lastIndexOf('.')),
+      clientId: '',
       size,
       type,
       status: '0',
+      video: e,
       videoUrl: '',
-      progress: 20,
+      progress: '0',
+      uploadStatus: false,
     });
-    setFileList([...fileList]);
-    console.log(fileList);
+    setClassRoomList([...classRoomList]);
+    console.log(classRoomList);
   };
-  // { uid: 'rc-upload-1669827373266-4', name: '公告.mp4', lastModified: 1654328912363, lastModifiedDate: Sat Jun 04 2022 15: 48: 32 GMT + 0800(GMT + 08: 00), webkitRelativePath: '', … }
+
+  //开始上传
+  const startUpload = (index) => {
+    console.log('开始上传');
+    console.log(classRoomList);
+    if (classRoomList[index]) {
+      if (!classRoomList[index].uploadStatus) {
+        fileUpload(classRoomList[index].video, progressCallback)
+          .then((res) => {
+            console.log(`第${index + 1}个文件上传成功`);
+            console.log(res);
+            classRoomList[
+              index
+            ].videoUrl = `https://ssl.cdn.maodouketang.com/${res.key}`;
+            classRoomList[index].uploadStatus = true;
+            setClassRoomList([...classRoomList]);
+            importSuccess = importSuccess + 1;
+            setImportSuccess(importSuccess);
+            // startUpload(index + 1);
+            btnClick('start-upload');
+            console.log(classRoomList);
+          })
+          .catch((err) => {
+            console.log('上传失败');
+            importErr = importErr + 1;
+            setImportSuccess(importErr);
+            console.log(err);
+          });
+      } else {
+        startUpload(index + 1);
+      }
+    }
+  };
+
+  const handleTableSubmit = () => {
+    let isEmpty = classRoomList.length < 1;
+    let isNotReady =
+      classRoomList.findIndex((item) => item.progress !== '100') > -1;
+    if (isEmpty) {
+      message.warn('导入列表为空');
+      return false;
+    } else if (isNotReady) {
+      message.warn('视频未全部上传成功');
+      return false;
+    } else {
+      setLoading(true);
+      // eslint-disable-next-line array-callback-return
+      classRoomList.map((item, index) => {
+        let { videoUrl, className, status = '0' } = item;
+        createClassroom({
+          courseId: searchParams.get('courseId'),
+          roomId: searchParams.get('roomId'),
+          type: 1,
+          choseUrl: videoUrl,
+          className: className,
+          status,
+          location: '线上',
+          remark: '批量导入的课程',
+        }).then((res) => {
+          //获得结果
+          console.log(res);
+          if (index === classRoomList.length - 1) {
+            message.success('批量导入成功');
+            reloadData();
+            setImportErr(0);
+            setImportSuccess(0);
+            setClassRoomList([]);
+            setLoading(false);
+            return true;
+          }
+        });
+      });
+
+      return true;
+    }
+  };
+
   return (
-    <div>
+    <div className="batch-import-modal">
       <Upload
         name="file"
         multiple
         action={handleUploadAction}
         className="upload"
+        accept="video/*"
+        // onChange={()=>startUpload(0)}
       >
         <Button id="upload-btn">点击上传</Button>
       </Upload>
       <ModalForm
-        title="批量导入"
-        trigger={<Button onClick={btnClick}>批量导入</Button>}
-        autoFocusFirstInput
+        title={
+          <div>
+            <span> 批量导入</span>
+            <Button
+              style={{ marginLeft: '20px' }}
+              type="primary"
+              onClick={() => btnClick('upload-btn')}
+            >
+              选择视频
+            </Button>
+            {classRoomList.length > 0 && (
+              <Button
+                id="start-upload"
+                style={{ marginLeft: '20px' }}
+                type="primary"
+                onClick={() => startUpload(0)}
+              >
+                开始上传
+              </Button>
+            )}
+          </div>
+        }
+        trigger={
+          <Button
+            onClick={() => classRoomList.length < 1 && btnClick('upload-btn')}
+          >
+            批量导入
+          </Button>
+        }
         modalProps={{
           destroyOnClose: true,
           onCancel: () => console.log('run'),
+          okText: '确认导入',
         }}
-        submitTimeout={2000}
-        onFinish={async (values) => {
-          await waitTime(2000);
-          console.log(values.name);
-          message.success('提交成功');
-          return true;
+        onFinish={() => {
+          return handleTableSubmit();
         }}
-        width={1200}
+        width={1300}
       >
         <ProTable
+          loading={loading}
           columns={columns}
+          key="index"
           rowSelection={{
             selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT],
-            defaultSelectedRowKeys: [1],
+            alwaysShowAlert: true,
           }}
           tableAlertRender={({
             selectedRowKeys,
@@ -229,31 +371,63 @@ export default (props) => {
                 <a style={{ marginInlineStart: 8 }} onClick={onCleanSelected}>
                   取消选择
                 </a>
+                <span style={{ marginInlineStart: 8 }}>
+                  上传成功： {importSuccess}
+                </span>
+                <span style={{ color: 'red', marginInlineStart: 8 }}>
+                  上传失败： {importErr}
+                </span>
               </span>
-              {/* <span>{`容器数量: ${selectedRows.reduce(
-                            (pre, item) => pre + item.containers,
-                            0,
-                        )} 个`}</span>
-                        <span>{`调用量: ${selectedRows.reduce(
-                            (pre, item) => pre + item.callNumber,
-                            0,
-                        )} 次`}</span> */}
             </Space>
           )}
-          tableAlertOptionRender={() => {
+          tableAlertOptionRender={({
+            selectedRowKeys,
+            selectedRows,
+            onCleanSelected,
+          }) => {
             return (
               <Space size={16}>
-                <a>一键上架</a>
-                <a>一键下架</a>
-                <a style={{ color: 'red' }}>删除</a>
+                <Button
+                  type="primary"
+                  ghost
+                  icon={<VerticalAlignTopOutlined />}
+                  onClick={() => batchStatus(selectedRowKeys, '1')}
+                >
+                  一键上架
+                </Button>
+                <Button
+                  type="primary"
+                  ghost
+                  icon={<VerticalAlignBottomOutlined />}
+                  onClick={() => batchStatus(selectedRowKeys, '0')}
+                >
+                  一键下架
+                </Button>
+                <Popconfirm
+                  title={
+                    selectedRowKeys.length > 0
+                      ? `确认要删除这${selectedRowKeys.length}条数据吗`
+                      : '您还未选择任何数据'
+                  }
+                  onConfirm={() =>
+                    selectedRowKeys.length > 0 &&
+                    handleTableDelete(selectedRowKeys)
+                  }
+                  okText="确认"
+                  cancelText="取消"
+                >
+                  {' '}
+                  <Button danger>删除</Button>
+                </Popconfirm>
               </Space>
             );
           }}
-          dataSource={fileList}
+          dataSource={classRoomList}
           scroll={{ x: 1300 }}
           options={false}
           search={false}
-          rowKey="key"
+          rowKey="index"
+
           // headerTitle="批量操作"
           // toolBarRender={() => [<Button key="show">查看日志</Button>]}
         />
