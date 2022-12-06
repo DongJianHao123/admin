@@ -1,3 +1,4 @@
+import { eventbus } from '@/common/eventbus';
 import { history as umiHistory } from '@umijs/max';
 import { isObject, isString } from 'lodash';
 import * as qiNiu from 'qiniu-js';
@@ -51,14 +52,19 @@ export async function fileUpload(
     };
 
     const observable = qiNiu.upload(file, null, token, {}, config);
-    observable.subscribe({
+    const subscription = observable.subscribe({
       error: (err) => reject(err),
       complete: (res) => resolve(res),
       next: (res) => {
-        progressCallback &&
-          progressCallback(res.total.percent.toFixed(0), file.index);
+        let progress = res.total.percent.toFixed(0);
+        progressCallback && progressCallback(progress);
+        progress === '100' &&
+          eventbus.removeListener('stop-upload', cancleUpload);
       },
     });
+    //取消上传触发方法 'stop-upload'
+    const cancleUpload = () => subscription.unsubscribe();
+    eventbus.on('stop-upload', cancleUpload);
   });
 }
 
