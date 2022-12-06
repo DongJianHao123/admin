@@ -57,7 +57,6 @@ export default (props) => {
       render: (txt, item, index) => {
         return (
           <Input
-            onBlur={() => console.log('失去焦点')}
             required
             onChange={(e) => {
               modClassRoomList('className', e.target.value, index);
@@ -220,8 +219,12 @@ export default (props) => {
 
   const handleUploadAction = (e) => {
     console.log(e);
-    let { name, size, type } = e;
-    if (classRoomList.length < 10) {
+    let { name, size, type, lastModified } = e;
+    let isExist = classRoomList.findIndex(
+      (item) =>
+        item.video.name === name && item.video.lastModified === lastModified,
+    );
+    if (classRoomList.length < 10 && isExist < 0) {
       classRoomList.push({
         className: name.substring(0, name.lastIndexOf('.')),
         clientId: '',
@@ -308,9 +311,9 @@ export default (props) => {
           //获得结果
           console.log(res);
           if (index === classRoomList.length - 1) {
-            reloadData();
             clearList();
             setLoading(false);
+            reloadData();
             return true;
           }
         });
