@@ -259,6 +259,7 @@ export default (props) => {
             console.log(`第${index + 1}个文件上传成功`);
             console.log(res);
             setUploadedItem({
+              startAt: new Date(),
               videoUrl: `https://ssl.cdn.maodouketang.com/${res.key}`,
               uploadStatus: 2,
             });
@@ -297,7 +298,7 @@ export default (props) => {
       setLoading(true);
       // eslint-disable-next-line array-callback-return
       classRoomList.map((item, index) => {
-        let { videoUrl, className, status = '0' } = item;
+        let { videoUrl, className, status = '0', startAt } = item;
         createClassroom({
           courseId: searchParams.get('courseId'),
           roomId: searchParams.get('roomId'),
@@ -305,6 +306,7 @@ export default (props) => {
           choseUrl: videoUrl,
           className: className,
           status,
+          startAt,
           location: '线上',
           remark: '批量导入的课程',
         }).then((res) => {
@@ -504,6 +506,12 @@ export default (props) => {
           // headerTitle="批量操作"
           // toolBarRender={() => [<Button key="show">查看日志</Button>]}
         />
+        {/* <ProFormSelect
+          name='select'
+          options={data.map((item => { return { value: item.id, label: item.nickname } }))}
+          width="md"
+          label={'dataSelect'}
+        /> */}
       </ModalForm>
     </div>
   );

@@ -12,7 +12,7 @@ import {
 } from '@ant-design/pro-components';
 import { useRequest, useSearchParams } from '@umijs/max';
 import { Button, message, Switch, Upload } from 'antd';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { history } from 'umi';
 import BatchImportProps from '../components/BatchImportProps';
 import ClassroomManageForm from '../components/ClassroomManageForm';
