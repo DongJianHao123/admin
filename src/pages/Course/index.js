@@ -5,6 +5,7 @@ import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { Button, Popconfirm } from 'antd';
 import { useRef, useState } from 'react';
 import CourseManageForm from './components/CourseManageForm';
+import SendSMS from './components/SendSMS';
 
 const columns = (openDrawer, tableRef) =>
   [
@@ -81,6 +82,11 @@ const columns = (openDrawer, tableRef) =>
           <Button onClick={() => openDrawer(row)} size="small" type="link">
             编辑
           </Button>
+          <SendSMS
+            courseId={row.courseId}
+            roomId={row.roomId}
+            title={row.title}
+          />
           <Popconfirm
             title="确定删除?"
             onConfirm={() =>

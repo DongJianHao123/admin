@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import { history } from 'umi';
 import BatchImportProps from '../components/BatchImportProps';
 import ClassroomManageForm from '../components/ClassroomManageForm';
-import '../../../style/classroomManage.less';
+import '../../../style/Course/classroomManage.less';
 import { useEventListener } from 'ahooks';
 import { Utils } from '@/common/Utils';
 
