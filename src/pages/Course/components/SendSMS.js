@@ -61,6 +61,7 @@ export default (props) => {
         destroyOnClose: true,
         onCancel: () => console.log('run'),
       }}
+      className="send-sms"
       submitTimeout={2000}
       onFinish={async (values) => {
         await onSubmit(values);
@@ -72,7 +73,7 @@ export default (props) => {
       {/* <Button className='select-all'>全选</Button> */}
       <ProFormSelect
         request={async () => {
-          let students = (await fetchMemberList()).data || [];
+          let students = (await fetchMemberList({ size: 1000 })).data || [];
           let _student = [];
           // eslint-disable-next-line array-callback-return
           students.map((item) => {
@@ -110,7 +111,7 @@ export default (props) => {
         rules={[{ required: true, message: '请输入短信内容' }]}
         fieldProps={{
           showCount: true,
-          maxLength: 50,
+          maxLength: 100,
         }}
         placeholder="请输入内容"
       />

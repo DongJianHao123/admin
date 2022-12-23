@@ -56,16 +56,18 @@ export default (props) => {
       editable: true,
       render: (txt, item, index) => {
         return (
-          <Input
-            required
-            onChange={(e) => {
-              modClassRoomList('className', e.target.value, index);
-              console.log(e);
-            }}
-            value={txt}
-            style={{ border: 'none' }}
-            suffix={<EditOutlined />}
-          />
+          <div>
+            <Input
+              required
+              onChange={(e) => {
+                modClassRoomList('className', e.target.value, index);
+                console.log(e);
+              }}
+              value={txt === '-' ? '' : txt}
+              style={{ border: 'none' }}
+              suffix={<EditOutlined />}
+            />
+          </div>
         );
       },
     },
@@ -178,10 +180,14 @@ export default (props) => {
   };
 
   const batchStatus = (selectedRowKeys, val) => {
-    // eslint-disable-next-line array-callback-return
-    selectedRowKeys.map((item) => {
-      handleStatusChange(item, val);
-    });
+    if (selectedRowKeys.length > 0) {
+      // eslint-disable-next-line array-callback-return
+      selectedRowKeys.map((item) => {
+        handleStatusChange(item, val);
+      });
+    } else {
+      message.warn('请选择至少一条数据');
+    }
   };
 
   /**
@@ -194,11 +200,19 @@ export default (props) => {
     let beforeIndexUploading = selectedRowKeys.filter(
       (item) => item < uploadIndex,
     ).length;
-    if (selectedRowKeys.includes(uploadIndex)) {
-      setIsUploading(false);
+    if (
+      selectedRowKeys.length < classRoomList.length &&
+      selectedRowKeys.includes(uploadIndex)
+    ) {
       console.log('捕获到删除正在上传的文件');
       stopUpload();
-      startUpload(uploadIndex);
+      if (isUploading) {
+        setIsUploading(false);
+        startUpload(uploadIndex + 1);
+      }
+    } else if (selectedRowKeys.length === classRoomList.length) {
+      setIsUploading(false);
+      stopUpload();
     }
     console.log('需要减去' + beforeIndexUploading);
     setUploadIndex(uploadIndex - beforeIndexUploading);
@@ -224,6 +238,9 @@ export default (props) => {
       (item) =>
         item.video.name === name && item.video.lastModified === lastModified,
     );
+    if (isExist > -1) {
+      message.warn(`${name},该文件已经加入上传列表`);
+    }
     if (classRoomList.length < 10 && isExist < 0) {
       classRoomList.push({
         className: name.substring(0, name.lastIndexOf('.')),
@@ -378,16 +395,6 @@ export default (props) => {
             >
               选择视频
             </Button>
-            {classRoomList.length > 0 && (
-              <Button
-                id="start-upload"
-                style={{ marginLeft: '20px', borderRadius: '4px' }}
-                type="primary"
-                onClick={() => !isUploading && startUpload(0)}
-              >
-                开始上传
-              </Button>
-            )}
             {/* <Button
               style={{ marginLeft: '20px', borderRadius: '4px' }}
               type="primary"
@@ -398,7 +405,11 @@ export default (props) => {
           </div>
         }
         trigger={
-          <Button onClick={() => btnClick('upload-btn')}>批量导入</Button>
+          <Button
+            onClick={() => classRoomList.length < 1 && btnClick('upload-btn')}
+          >
+            批量导入
+          </Button>
         }
         modalProps={{
           destroyOnClose: true,
@@ -409,6 +420,7 @@ export default (props) => {
                 title: `是否清空导入数据?`,
                 onOk: () => {
                   stopUpload();
+                  setIsUploading(false);
                   clearList();
                 },
               });
@@ -449,7 +461,7 @@ export default (props) => {
                   上传失败： {summary.err}
                 </span>
                 <span style={{ marginInlineStart: 10 }}>
-                  每次只能导入10个文件
+                  每次只能导入<span style={{ color: '#1890ff' }}>10</span>个文件
                 </span>
               </span>
             </Space>
@@ -461,6 +473,16 @@ export default (props) => {
           }) => {
             return (
               <Space size={16}>
+                {classRoomList.length > 0 && (
+                  <Button
+                    id="start-upload"
+                    style={{ marginLeft: '20px', borderRadius: '4px' }}
+                    type="primary"
+                    onClick={() => !isUploading && startUpload(0)}
+                  >
+                    开始上传
+                  </Button>
+                )}
                 <Button
                   type="primary"
                   ghost
