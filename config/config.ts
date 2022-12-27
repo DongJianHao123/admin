@@ -9,7 +9,7 @@ import { redirectScript } from './templateScript';
 const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
-  // publicPath: '/admin/',
+  publicPath: '/admin/',
   base: '/admin/',
   headScripts: [redirectScript],
   define: {
