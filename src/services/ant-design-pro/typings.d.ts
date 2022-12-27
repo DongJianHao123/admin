@@ -22,11 +22,24 @@ declare namespace API {
     address?: string;
     phone?: string;
   };
+  type CurrentClient = {
+    clientId?: string;
+    clientName?: string;
+    createdAt?: string;
+    avatar?: string;
+    email?: string;
+    id?: Number;
+    name?: string;
+    password?: string;
+    status?: number;
+    telephone?: string;
+    type?: number;
+    updatedAt?: string;
+  };
 
   type LoginResult = {
-    status?: string;
-    type?: string;
-    currentAuthority?: string;
+    code?: number;
+    msg?: string;
   };
 
   type PageParams = {
@@ -64,8 +77,6 @@ declare namespace API {
   type LoginParams = {
     username?: string;
     password?: string;
-    autoLogin?: boolean;
-    type?: string;
   };
 
   type ErrorResponse = {

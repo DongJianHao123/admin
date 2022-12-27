@@ -10,6 +10,7 @@ import { useRequest } from '@umijs/max';
 import { Col, Row, Statistic } from 'antd';
 import ReactECharts from 'echarts-for-react';
 import React from 'react';
+import '../style/Dashboard/dashboard.less';
 
 const packChartData = (rawData: any) => {
   const list = (rawData?.daySummaryList || []).reverse();
@@ -70,7 +71,7 @@ const Dashboard: React.FC = () => {
     },
   ].map((item) => ({ ...item, align: 'center' }));
   return (
-    <>
+    <div className="dashboard">
       <PageContainer>
         <ProCard direction="row" ghost gutter={[8, 8]}>
           {durationData.map((item) => (
@@ -108,7 +109,7 @@ const Dashboard: React.FC = () => {
           </ProCard>
         </ProCard>
       </PageContainer>
-    </>
+    </div>
   );
 };
 

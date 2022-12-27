@@ -30,7 +30,7 @@ const columns = (registInfos = []) =>
     {
       title: '使用设备数',
       dataIndex: 'equipments',
-      align: 'center',
+      align: 'left',
       render: (_, row) => {
         let { equipments = [] } = row;
         let _length = equipments.length;

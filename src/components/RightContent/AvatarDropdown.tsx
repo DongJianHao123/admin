@@ -1,4 +1,3 @@
-import { outLogin } from '@/services/ant-design-pro/api';
 import {
   LogoutOutlined,
   SettingOutlined,
@@ -7,7 +6,6 @@ import {
 import { history, useModel } from '@umijs/max';
 import { Avatar, Menu, Spin } from 'antd';
 import type { ItemType } from 'antd/es/menu/hooks/useItems';
-import { stringify } from 'querystring';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useCallback } from 'react';
 import HeaderDropdown from '../HeaderDropdown';
@@ -22,19 +20,21 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
    * 退出登录，并且将当前的 url 保存
    */
   const loginOut = async () => {
-    await outLogin();
-    const { search, pathname } = window.location;
+    // await outLogin();
+    // const { search, pathname } = window.location;
     const urlParams = new URL(window.location.href).searchParams;
     /** 此方法会跳转到 redirect 参数所在的位置 */
     const redirect = urlParams.get('redirect');
     // Note: There may be security issues, please note
     if (window.location.pathname !== '/user/login' && !redirect) {
-      history.replace({
-        pathname: '/user/login',
-        search: stringify({
-          redirect: pathname + search,
-        }),
-      });
+      history.push('/');
+      //用来重定向到刚刚退出的地方
+      // history.replace({
+      //   pathname: '/user/login',
+      //   search: stringify({
+      //     redirect: pathname + search,
+      //   }),
+      // });
     }
   };
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -43,7 +43,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     (event: MenuInfo) => {
       const { key } = event;
       if (key === 'logout') {
-        setInitialState((s) => ({ ...s, currentUser: undefined }));
+        setInitialState((s) => ({ ...s, currentClient: undefined }));
+        localStorage.removeItem('client');
         loginOut();
         return;
       }
@@ -68,9 +69,9 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     return loading;
   }
 
-  const { currentUser } = initialState;
+  const { currentClient } = initialState;
 
-  if (!currentUser || !currentUser.name) {
+  if (!currentClient || !currentClient.name) {
     return loading;
   }
 
@@ -114,10 +115,13 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         <Avatar
           size="small"
           className={styles.avatar}
-          src={currentUser.avatar}
+          src={
+            currentClient.avatar ||
+            'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
+          }
           alt="avatar"
         />
-        <span className={`${styles.name} anticon`}>{currentUser.name}</span>
+        <span className={`${styles.name} anticon`}>{currentClient.name}</span>
       </span>
     </HeaderDropdown>
   );
