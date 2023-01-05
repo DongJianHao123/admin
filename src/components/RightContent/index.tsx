@@ -14,7 +14,7 @@ const GlobalHeaderRight: React.FC = () => {
   }
 
   const { navTheme, layout } = initialState.settings;
-  let className = styles.right;
+  let className = `${styles.right}  ${styles.dark}`;
 
   if ((navTheme === 'realDark' && layout === 'top') || layout === 'mix') {
     className = `${styles.right}  ${styles.dark}`;
