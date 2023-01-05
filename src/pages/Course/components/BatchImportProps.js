@@ -61,7 +61,6 @@ export default (props) => {
               required
               onChange={(e) => {
                 modClassRoomList('className', e.target.value, index);
-                console.log(e);
               }}
               value={txt === '-' ? '' : txt}
               style={{ border: 'none' }}
@@ -168,7 +167,6 @@ export default (props) => {
   };
 
   const btnClick = (id) => {
-    console.log(isUploading);
     let btn = document.getElementById(id);
     btn.click();
   };
@@ -176,7 +174,6 @@ export default (props) => {
   const handleStatusChange = (index, val) => {
     classRoomList[index].status = val;
     setClassRoomList([...classRoomList]);
-    console.log(classRoomList);
   };
 
   const batchStatus = (selectedRowKeys, val) => {
@@ -195,7 +192,6 @@ export default (props) => {
    * @param {Array<Number>} selectedRowKeys
    */
   const handleTableDelete = (selectedRowKeys) => {
-    console.log(selectedRowKeys);
     //获得删除的文件中比当前正在上传的文件的数量
     let beforeIndexUploading = selectedRowKeys.filter(
       (item) => item < uploadIndex,
@@ -214,7 +210,6 @@ export default (props) => {
       setIsUploading(false);
       stopUpload();
     }
-    console.log('需要减去' + beforeIndexUploading);
     setUploadIndex(uploadIndex - beforeIndexUploading);
 
     // eslint-disable-next-line array-callback-return
@@ -228,11 +223,9 @@ export default (props) => {
 
   const progressCallback = (progress) => {
     setUploadProgress(progress);
-    console.log(progress);
   };
 
   const handleUploadAction = (e) => {
-    console.log(e);
     let { name, size, type, lastModified } = e;
     let isExist = classRoomList.findIndex(
       (item) =>
@@ -274,7 +267,6 @@ export default (props) => {
         fileUpload(classRoomList[index].video, progressCallback)
           .then((res) => {
             console.log(`第${index + 1}个文件上传成功`);
-            console.log(res);
             setUploadedItem({
               startAt: new Date(),
               videoUrl: `https://ssl.cdn.maodouketang.com/${res.key}`,
@@ -282,7 +274,6 @@ export default (props) => {
             });
             setIsUploading(false);
             btnClick('start-upload');
-            console.log(classRoomList);
           })
           .catch((err) => {
             console.log('上传失败');
@@ -328,7 +319,6 @@ export default (props) => {
           remark: '批量导入的课程',
         }).then((res) => {
           //获得结果
-          console.log(res);
           if (index === classRoomList.length - 1) {
             clearList();
             setLoading(false);

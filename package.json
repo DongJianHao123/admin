@@ -22,7 +22,7 @@
     "prepare": "husky install",
     "prettier": "prettier -c --write \"src/**/*\"",
     "serve": "set PORT=8004 && umi-serve",
-    "start": "set PORT=4400 && cross-env UMI_ENV=dev max dev",
+    "start": "set PORT=4400 && cross-env UMI_ENV=admin max dev",
     "start:dev": "cross-env REACT_APP_ENV=dev MOCK=none UMI_ENV=dev max dev",
     "start:no-mock": "cross-env MOCK=none UMI_ENV=dev max dev",
     "start:pre": "cross-env REACT_APP_ENV=pre UMI_ENV=dev max dev",
@@ -67,6 +67,7 @@
     "react-dom": "^17.0.0",
     "react-helmet-async": "^1.2.0",
     "react-quill": "^2.0.0",
+    "tencentcloud-sdk-nodejs": "^4.0.512",
     "umi-request": "^1.4.0"
   },
   "devDependencies": {

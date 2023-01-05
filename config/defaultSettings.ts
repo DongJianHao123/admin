@@ -19,6 +19,8 @@ const Settings: LayoutSettings & {
   pwa: false,
   logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   iconfontUrl: '',
+  siderMenuType: 'sub',
+  splitMenus: false,
 };
 
 export default Settings;

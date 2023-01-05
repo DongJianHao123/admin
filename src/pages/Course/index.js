@@ -82,11 +82,11 @@ const columns = (openDrawer, tableRef) =>
           <Button onClick={() => openDrawer(row)} size="small" type="link">
             编辑
           </Button>
-          <SendSMS
+          {/* <SendSMS
             courseId={row.courseId}
             roomId={row.roomId}
             title={row.title}
-          />
+          /> */}
           <Popconfirm
             title="确定删除?"
             onConfirm={() =>

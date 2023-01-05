@@ -1,6 +1,5 @@
 import RightContent from '@/components/RightContent';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
-import { SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { history } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
@@ -44,11 +43,17 @@ export async function getInitialState(): Promise<{
     settings: defaultSettings,
   };
 }
-
+// setInterval(() => {
+//   console.log(123);
+//   if(window.location.pathname==='admin'){
+//     window.location.pathname='/'
+//     history.push('/')
+//   }
+// }, 500);
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({
   initialState,
-  setInitialState,
+  // setInitialState,
 }) => {
   return {
     rightContentRender: () => <RightContent />,
@@ -62,7 +67,19 @@ export const layout: RunTimeLayoutConfig = ({
       if (!initialState?.currentClient && location.pathname !== loginPath) {
         history.push(loginPath);
       }
+      console.log(window.location);
+
+      if (
+        window.location.pathname === '/admin' ||
+        window.location.pathname === '/admin/'
+      ) {
+        // history.createHref('/')
+        // window.location.hash = '#';
+        window.location.pathname = '/';
+        history.push('/');
+      }
     },
+
     layoutBgImgList: [
       {
         src: 'https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/D2LWSqNny4sAAAAAAAAAAAAAFl94AQBr',
@@ -95,12 +112,12 @@ export const layout: RunTimeLayoutConfig = ({
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
-    childrenRender: (children, props) => {
+    childrenRender: (children) => {
       // if (initialState?.loading) return <PageLoading />;
       return (
         <>
           {children}
-          {!props.location?.pathname?.includes('/login') && (
+          {/* {!props.location?.pathname?.includes('/login') && (
             <SettingDrawer
               disableUrlParams
               enableDarkTheme
@@ -112,7 +129,7 @@ export const layout: RunTimeLayoutConfig = ({
                 }));
               }}
             />
-          )}
+          )} */}
         </>
       );
     },
