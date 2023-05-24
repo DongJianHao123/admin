@@ -45,6 +45,17 @@ const U = {
     isEmptyObj: (obj: object) => {
       return Object.keys(obj).length === 0;
     },
+    RemoveNulls: (obj: object) => {
+      for (const key in obj) {
+        if (Object.hasOwnProperty.call(obj, key)) {
+          const element = obj[key];
+          if (element === null || element === "") {
+            delete obj[key];
+          }
+        }
+      }
+      return obj;
+    }
   },
 
   date: {

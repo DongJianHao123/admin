@@ -195,7 +195,7 @@ export default () => {
 
   const parseExcelData = () => {
     return new Promise((resolve, reject) => {
-      let _res = [];// res.sort((a, b) => (b.times - a.times));
+      let _res = [];
       tableData.sort((a, b) => {
         if ((b.times === a.times)) {
           return b.duration - a.duration;

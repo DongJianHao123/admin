@@ -63,6 +63,12 @@ export default [
     icon: 'CarryOutOutlined',
     component: './ClassHourStatistics',
   },
+  {
+    path: '/actions',
+    name: 'actions',
+    icon: 'EyeOutlined',
+    component: './Actions',
+  },
 
   // {
   //   path: '/admin',
