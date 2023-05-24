@@ -55,6 +55,7 @@
     "dayjs": "^1.11.5",
     "echarts": "^5.4.0",
     "echarts-for-react": "^3.0.2",
+    "js-export-excel": "^1.1.4",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.0",
@@ -68,7 +69,8 @@
     "react-helmet-async": "^1.2.0",
     "react-quill": "^2.0.0",
     "tencentcloud-sdk-nodejs": "^4.0.512",
-    "umi-request": "^1.4.0"
+    "umi-request": "^1.4.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.1.0",

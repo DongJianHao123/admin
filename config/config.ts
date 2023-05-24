@@ -9,11 +9,11 @@ import { redirectScript } from './templateScript';
 const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
-  publicPath: '/admin/',
+  // publicPath: '/admin/',
   base: '/admin/',
   headScripts: [redirectScript],
   define: {
-    'process.env.clientId': 381, //421为毛豆课堂测试账号，381为司康英语
+    'process.env.clientId': 466, //421为毛豆课堂测试账号，381为司康英语
   },
   history: { type: 'browser' },
   // outputPath: '/dist/admin/',

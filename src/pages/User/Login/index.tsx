@@ -1,6 +1,5 @@
 import { fetchClient, login } from '@/services/client';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { LoginForm, ProFormText } from '@ant-design/pro-components';
 import {
   FormattedMessage,
   history,
@@ -11,6 +10,7 @@ import {
 import { Alert, message } from 'antd';
 import React, { useState } from 'react';
 import styles from './index.less';
+import { LoginForm, ProFormText } from '@ant-design/pro-components/es/index';
 
 const LoginMessage: React.FC<{
   content: string;
