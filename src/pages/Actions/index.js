@@ -36,14 +36,15 @@ const columns = [
         dataIndex: 'roomId',
         align: "center",
         search: false,
-        width: 10,
+        width: 50,
+        render: (txt) => <span style={{ wordBreak: "break-all", wordWrap: "break-word" }}>{txt}</span>
     },
     {
         title: '姓名',
         dataIndex: 'userName',
         search: true,
         align: 'center',
-        width: 30,
+        width: 40,
         onCell: ({ dataLength }, index) => {
             if (dataLength - 1 === index) {
                 return {
@@ -71,10 +72,9 @@ const columns = [
         title: '手机号',
         search: true,
         dataIndex: 'userId',
-        width: 40,
+        width: 55,
         align: 'center',
-        render:(txt)=><p>{txt}</p>,
-        onCell,
+        render: (txt) => <span style={{ wordBreak: "break-all", wordWrap: "break-word" }}>{txt}</span>
     },
     {
         title: '时间',
@@ -107,7 +107,7 @@ const columns = [
     {
         title: '行为',
         dataIndex: 'actionType',
-        width: 10,
+        width: 40,
         align: "center",
         search: true,
         valueType: 'select',
@@ -121,7 +121,7 @@ const columns = [
         dataIndex: 'description',
         valueType: 'userId',
         align: 'center',
-        width: 50,
+        width: 60,
         render: (txt) => <Popover content={<p className="table-txt-popover">{txt}</p>} title="备注"> <span className="table-txt">{txt}</span></Popover>,
         onCell,
     },
@@ -130,7 +130,7 @@ const columns = [
         search: false,
         dataIndex: 'courseName',
         align: 'center',
-        width: 60,
+        width: 120,
         render: (txt) => <span className="table-txt">{txt}</span>,
         onCell,
     },
@@ -139,7 +139,7 @@ const columns = [
         dataIndex: 'courseClassName',
         search: false,
         align: 'center',
-        width: 60,
+        width: 120,
         render: (txt) => <span className="table-txt">{txt}</span>,
         onCell,
     },

@@ -21,7 +21,6 @@ interface ResponseStructure {
   showType?: ErrorShowType;
 }
 
-const clientId = process.env.clientId;
 
 /**
  * @name 错误处理
@@ -103,6 +102,14 @@ export const errorConfig: RequestConfig = {
     // clientId 统一处理，会覆盖所有手动配置的clientId参数值
     (config: RequestOptions) => {
       const tmp = config.url?.split('?');
+
+      let clientId: string = "";
+      try {
+        clientId = JSON.parse(localStorage.getItem("client") || "").clientId;
+      } catch (error) {
+        console.log("您未登录");
+      }
+
       const params = Object.entries({
         ...QueryString.parse(tmp?.[1] || ''),
         ...config.params,

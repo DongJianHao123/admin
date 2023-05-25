@@ -67,8 +67,6 @@ export const layout: RunTimeLayoutConfig = ({
       if (!initialState?.currentClient && location.pathname !== loginPath) {
         history.push(loginPath);
       }
-      console.log(window.location);
-
       if (
         window.location.pathname === '/admin' ||
         window.location.pathname === '/admin/'

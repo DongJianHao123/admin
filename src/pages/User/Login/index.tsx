@@ -33,10 +33,10 @@ const Login: React.FC = () => {
 
   const intl = useIntl();
 
-  const fetchClientInfo = async () => {
-    const clientInfo = (await fetchClient()) || [];
+  const fetchClientInfo = async (clientId: string) => {
+    const clientInfo = (await fetchClient(clientId)) || [];
     if (clientInfo[0]) {
-      await setInitialState((s) => ({
+      await setInitialState((s:any) => ({
         ...s,
         currentClient: clientInfo[0],
       }));
@@ -54,7 +54,10 @@ const Login: React.FC = () => {
           defaultMessage: '登录成功！',
         });
         message.success(defaultLoginSuccessMessage);
-        await fetchClientInfo();
+        let msgArr = msg.msg.split(",");
+        const clientId: string = msgArr[0].split(":")[1];
+
+        await fetchClientInfo(clientId);
         const urlParams = new URL(window.location.href).searchParams;
         history.push(urlParams.get('redirect') || '/');
         return;
@@ -81,7 +84,7 @@ const Login: React.FC = () => {
       </div>
       <div className={styles.content}>
         <LoginForm
-          logo={<img alt="logo" src="/admin/logo.svg" />}
+          logo={<img alt="logo" src="/logo.svg" />}
           title="管理后台"
           subTitle={intl.formatMessage({
             id: 'pages.layouts.userLayout.title',
