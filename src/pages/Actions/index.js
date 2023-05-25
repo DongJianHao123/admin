@@ -152,7 +152,6 @@ export default () => {
         <PageContainer>
             <ProTable
                 className="action-table"
-                bordered
                 rowKey="index"
                 columns={columns}
                 search={{ labelWidth: 100, defaultCollapsed: false }}
@@ -167,7 +166,7 @@ export default () => {
                 }}
                 pagination={true}
                 defaultSize="small"
-                scroll={{ x: `calc(${scrollX}px + 50%)` }}
+                scroll={{ x: `calc(${scrollX}px + 50%)`,y:600 }}
                 onChange={(_p, _f, sorter) => {
                     if (!isEmpty(sorter)) {
                         isSortAction = true;

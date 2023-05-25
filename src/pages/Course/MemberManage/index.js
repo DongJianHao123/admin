@@ -1,9 +1,9 @@
-import { deleteMember, fetchMemberList, updateMember } from '@/services/course';
+import { deleteMember, fetchCourseInfo, fetchCourseList, fetchMemberList, updateMember } from '@/services/course';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { useParams } from '@umijs/max';
 import { Button, message, Popconfirm, Switch } from 'antd';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MemberManageForm, { roles } from '../components/MemberManageForm';
 
 const columns = (setDrawProps, tableRef) =>
@@ -22,6 +22,7 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '手机号',
       dataIndex: 'phone',
+      search: true,
     },
     {
       title: '性别',
@@ -118,6 +119,15 @@ export default () => {
   const { courseId } = useParams();
   const tableRef = useRef();
   const [drawerProps, setDrawProps] = useState({ visible: false });
+  const [course, setCourse] = useState();
+
+  const loadCourse = () => {
+    fetchCourseList({ courseId }).then((res) => {
+      setCourse(res.data[0])
+    })
+  }
+
+  useEffect(loadCourse, [])
 
   return (
     <PageContainer
@@ -127,6 +137,7 @@ export default () => {
       }}
     >
       <ProTable
+        headerTitle={course && course.title}
         actionRef={tableRef}
         pagination={{ pageSize: 20 }}
         rowKey="id"

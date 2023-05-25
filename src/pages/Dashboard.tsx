@@ -25,9 +25,9 @@ const packChartData = (rawData: any) => {
     },
     yAxis: {
       type: 'value',
-      interval: 18000,
+      interval: rawData?.totalTimeLong / 20,
       axisLabel: {
-        formatter: secondsParse,
+        formatter: (seconds: any) => Math.floor(seconds / 3600) + "时",
       },
     },
     series: [

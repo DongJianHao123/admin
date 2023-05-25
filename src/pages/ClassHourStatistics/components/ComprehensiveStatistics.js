@@ -158,6 +158,7 @@ export default () => {
   const [timeRange, setTimeRange] = useState({});
   const [dateRec, setDateRec] = useState([]);
   const [tableData, setTableData] = useState([]);
+  const [totalDuration, setTotalDuration] = useState("");
   const [loading, setLoading] = useState(false);
   const columns = packColumns(dateRec);
   const scrollX = columns
@@ -245,10 +246,20 @@ export default () => {
           setDateRec(Object.entries(recs)),
         );
         dataSource = await fetchCourseStatisticData(params);
+        console.log(dataSource);
+        let daySum = dataSource.daySum;
+        let allDuratin = 0;
+        for (const key in daySum) {
+          if (Object.hasOwnProperty.call(daySum, key)) {
+            const element = daySum[key];
+            allDuratin += element;
+          }
+        }
+        setTotalDuration(allDuratin)
         return dataSource;
       }}
       headerTitle={
-        <span style={{ color: '#1890ff' }}>时长统计 79小时10分9秒</span>
+        <span style={{ color: '#1890ff' }}>时长统计 {secondsParse(totalDuration)}</span>
       }
       toolBarRender={() => {
         return <Button type="primary" loading={loading} icon={<ExportOutlined />} onClick={downloadFileToExcel} >导出excel</Button>

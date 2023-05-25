@@ -46,11 +46,11 @@ export default () => {
       <ProFormTextArea
         name="aboutUsInfo"
         label="机构介绍"
-        colProps={{ md: 24, xl: 24 }}
+        colProps={{ md: 24, xl: 12 }}
         required
         placeholder="请输入"
-        labelCol={{ span: 2 }}
-        fieldProps={{ maxLength: 300, showCount: true, rows: 10 }}
+        labelCol={{ span: 4}}
+        fieldProps={{ maxLength: 300, showCount: true, rows: 10}}
         rules={requiredRule}
       />
       <ProFormUploadButton
@@ -79,7 +79,7 @@ export default () => {
         labelCol={{ span: 2 }}
         rules={requiredRule}
         action={(file) => handleImgUpload(file, 'consultUrl')}
-        extra="建议图片比例为16:9"
+        extra="建议图片比例为1:1"
       />
       <ProFormUploadButton
         name="coverUrl"
