@@ -4,11 +4,11 @@ import dayjs from 'dayjs';
 
 export async function fetchCourseList(params) {
   return request(
-    '/seller/api/coursesget/getAllCoursesByConditionsWithTotal?clientId=385',
+    '/seller/api/coursesget/getAllCoursesByConditionsWithTotal?clientId=385&isDelete=1',
     {
       params: {
         ...params,
-        isDelete: 1,
+        // isDelete: 1,
       },
     },
   ).then((res) => ({

@@ -1,3 +1,4 @@
+import U from '@/common/U';
 import { fetchCourseList, updateCourse } from '@/services/course';
 import { history } from '@/utils';
 import { PlusOutlined } from '@ant-design/icons';
@@ -5,7 +6,6 @@ import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { Button, Popconfirm } from 'antd';
 import { useRef, useState } from 'react';
 import CourseManageForm from './components/CourseManageForm';
-import SendSMS from './components/SendSMS';
 
 const columns = (openDrawer, tableRef) =>
   [
@@ -16,10 +16,17 @@ const columns = (openDrawer, tableRef) =>
       width: 80,
     },
     {
+      title: '课程号',
+      dataIndex: 'courseId',
+      search: true,
+      hideInTable: true,
+    },
+    {
       title: '课程名称',
       dataIndex: 'title',
-      width: 400,
+      width: 200,
       search: true,
+      ellipsis: true,
     },
     {
       title: '教室ID',
@@ -45,7 +52,7 @@ const columns = (openDrawer, tableRef) =>
       title: '操作',
       dataIndex: 'action',
       align: 'center',
-      width: 200,
+      width: 300,
       fixed: 'right',
       render: (_, row) => (
         <>
@@ -82,11 +89,6 @@ const columns = (openDrawer, tableRef) =>
           <Button onClick={() => openDrawer(row)} size="small" type="link">
             编辑
           </Button>
-          {/* <SendSMS
-            courseId={row.courseId}
-            roomId={row.roomId}
-            title={row.title}
-          /> */}
           <Popconfirm
             title="确定删除?"
             onConfirm={() =>
@@ -104,7 +106,7 @@ const columns = (openDrawer, tableRef) =>
     },
   ].map((item) => ({ search: false, width: 120, ...item }));
 
-export default () => {
+const Course = () => {
   const [drawerProps, setDrawerProps] = useState({ visible: false });
   const tableRef = useRef();
 
@@ -121,7 +123,10 @@ export default () => {
         pagination={null}
         rowKey="id"
         columns={columns(handleDrawerOpen, tableRef)}
-        request={fetchCourseList}
+        request={async (params) => {
+          params = U.obj.RemoveNulls(params)
+          return await fetchCourseList(params)
+        }}
         scroll={{ y: 458 }}
         toolBarRender={() => (
           <Button
@@ -142,3 +147,5 @@ export default () => {
     </PageContainer>
   );
 };
+
+export default Course

@@ -18,8 +18,7 @@ import { isEmpty, isUndefined } from 'lodash';
 import { useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-
-export default ({ id, handleClose, tableReload, ...props }) => {
+const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
   const [form] = Form.useForm();
   const handleImgUpload = (file) => {
     fileUpload(file).then((res) => {
@@ -161,6 +160,14 @@ export default ({ id, handleClose, tableReload, ...props }) => {
         placeholder="请输入"
         rules={requiredRule}
       />
+      <ProFormText
+        name="teacher"
+        label="任课教师"
+        colProps={{ md: 12, xl: 16 }}
+        required
+        placeholder="请输入"
+        rules={requiredRule}
+      />
       <ProFormUploadButton
         name="coverUrl"
         label="课程图片"
@@ -199,3 +206,6 @@ export default ({ id, handleClose, tableReload, ...props }) => {
     </DrawerForm>
   );
 };
+
+
+export default CourseManageForm;

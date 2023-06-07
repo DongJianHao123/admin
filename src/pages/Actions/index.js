@@ -2,7 +2,7 @@ import { Action_type } from "@/common/constants";
 import U from "@/common/U";
 import { Utils } from "@/common/Utils";
 import { actions } from "@/services/actions";
-import { fetchCourseList } from "@/services/classHourStatistics";
+import { getCourseList } from "@/services/classHourStatistics";
 import { PageContainer, ProTable } from "@ant-design/pro-components";
 import { Popover } from "antd";
 import { isEmpty } from "lodash";
@@ -29,7 +29,7 @@ const columns = [
         hideInTable: true,
         search: true,
         valueType: 'select',
-        request: fetchCourseList,
+        request: getCourseList,
     },
     {
         title: '课程',
@@ -83,15 +83,26 @@ const columns = [
         hideInTable: true,
         align: "center",
         valueType: 'dateRange',
-        initialValue: [moment().add(-24, 'h'), moment().add(+24, 'h',)],
+        initialValue: [moment().add(0, 'd'), moment().add(0, 'd',)],
         fieldProps: {
             allowClear: false,
         },
         search: {
-            transform: ([start, end]) => ({
-                startTime: new Date(start),
-                endTime: new Date(end),
-            }),
+            transform: ([start, end]) => {
+                let startTime = new Date(start);
+                let endTime = new Date(end);
+                startTime.setHours(0);
+                startTime.setMinutes(0);
+                startTime.setSeconds(0);
+                endTime.setHours(23);
+                endTime.setMinutes(59);
+                endTime.setSeconds(59);
+                console.log(startTime, endTime);
+                return ({
+                    startTime,
+                    endTime
+                })
+            }
         },
     }, {
         title: '时间',
@@ -146,7 +157,7 @@ const columns = [
 
 ]
 
-export default () => {
+const Actions = () => {
 
     return (
         <PageContainer>
@@ -166,7 +177,7 @@ export default () => {
                 }}
                 pagination={true}
                 defaultSize="small"
-                scroll={{ x: `calc(${scrollX}px + 50%)`,y:600 }}
+                scroll={{ x: `calc(${scrollX}px + 50%)`, y: 600 }}
                 onChange={(_p, _f, sorter) => {
                     if (!isEmpty(sorter)) {
                         isSortAction = true;
@@ -177,3 +188,4 @@ export default () => {
         </PageContainer>
     );
 };
+export default Actions;

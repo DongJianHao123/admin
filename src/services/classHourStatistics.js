@@ -1,20 +1,22 @@
 import { addListIndex } from '@/utils';
 import { request } from '@umijs/max';
 import moment from 'moment';
+import { fetchCourseList } from './course';
 
-export async function fetchCourseList() {
-  return request('/seller/api/courses', {
-    params: { 'clientId.in': 385 },
-  }).then((data) =>
-    data
+export async function getCourseList() {
+  return fetchCourseList().then(({data}) => {
+    console.log(data);
+    return data
       .map((item) => ({
-        label: item.title,
-        value: item.roomId,
+        label: item.title || " ",
+        value: item.roomId || " ",
       }))
       .filter(
         (item, index, self) =>
           self.findIndex((i) => i.value === item.value) === index,
-      ),
+      )
+  }
+
   );
 }
 
@@ -53,12 +55,12 @@ export async function fetchCourseStatisticData(params) {
         ...addListIndex(data),
         ...(data.length > 0
           ? [
-              {
-                index: data.length + 1,
-                name: '时长统计',
-                ...resp.daySum,
-              },
-            ]
+            {
+              index: data.length + 1,
+              name: '时长统计',
+              ...resp.daySum,
+            },
+          ]
           : []),
       ].map((item, _i, self) => ({
         ...item,

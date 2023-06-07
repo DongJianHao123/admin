@@ -1,5 +1,4 @@
 import { fetchConsumptionDuration } from '@/services/dashboard';
-import { secondsParse } from '@/utils';
 import {
   PageContainer,
   ProCard,

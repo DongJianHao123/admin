@@ -1,4 +1,4 @@
-import { fetchCourseList } from '@/services/classHourStatistics';
+import { getCourseList } from '@/services/classHourStatistics';
 import { getAllActions } from '@/services/client';
 import { fetchMemberList } from '@/services/course';
 import { history } from '@/utils';
@@ -128,8 +128,9 @@ export default () => {
     setStudents([..._students]);
   };
   const loadCourses = () => {
-    fetchCourseList().then((res) => {
+    getCourseList().then((res) => {
       setCourses(res)
+      console.log(res);
     })
   }
   useEffect(() => { loadCourses() }, [])

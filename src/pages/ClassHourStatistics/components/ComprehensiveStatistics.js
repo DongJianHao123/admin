@@ -1,6 +1,6 @@
 import {
   fetchCourseDateRec,
-  fetchCourseList,
+  getCourseList,
   fetchCourseStatisticData,
 } from '@/services/classHourStatistics';
 import { fetchClassroomList } from '@/services/course';
@@ -46,7 +46,7 @@ const packColumns = (dateRec) =>
       hideInTable: true,
       search: true,
       valueType: 'select',
-      request: fetchCourseList,
+      request: getCourseList,
     },
     {
       title: '学生数',
@@ -90,7 +90,7 @@ const packColumns = (dateRec) =>
       hideInTable: true,
       search: true,
       valueType: 'dateRange',
-      colSize: 2,
+      // colSize: 2,
       initialValue: [moment().add(-1, 'd'), moment().add(-1, 'd')],
       fieldProps: {
         allowClear: false,
@@ -105,7 +105,6 @@ const packColumns = (dateRec) =>
     {
       title: '序号',
       dataIndex: 'index',
-      valueType: 'index',
       align: 'center',
       width: 80,
       onCell,
@@ -122,6 +121,14 @@ const packColumns = (dateRec) =>
           };
         }
       },
+    },
+    {
+      title: '联系方式',
+      dataIndex: 'userId',
+      valueType: 'text',
+      align: 'center',
+      width: 100,
+      onCell,
     },
     {
       title: '出勤次数',
@@ -178,9 +185,9 @@ export default () => {
         {
           sheetData: res,  //excel文件中的数据源
           sheetName: "表1",  //excel文件中sheet页名称
-          sheetFilter: ["index", "name", "times", "duration", ...dateRec.map((item) => item[0])],  //excel文件中需显示的列数据
-          sheetHeader: ["序号", "姓名", "出勤次数", "上课时长", ...dateRec.map((item) => item[0])], //excel文件中每列的表头名称
-          columnWidths: [4, 5, 5, 10, 10, ...dateRec.map(() => 10)]
+          sheetFilter: ["index", "name", "phone", "times", "duration", ...dateRec.map((item) => item[0])],  //excel文件中需显示的列数据
+          sheetHeader: ["序号", "姓名", "联系方式", "出勤次数", "上课时长", ...dateRec.map((item) => item[0])], //excel文件中每列的表头名称
+          columnWidths: [4, 5, 5, 5, 10, 10, ...dateRec.map(() => 10)]
         }
       ]
       let toExcel = new ExportJsonExcel(option);  //生成excel文件
@@ -210,6 +217,7 @@ export default () => {
             index: index + 1,
             name: item.name,
             times: item.times,
+            phone: item.userId,
             duration: secondsParse(item.duration),
           }
           dateRec.forEach((date) => {

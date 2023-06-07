@@ -5,6 +5,7 @@ import { useParams } from '@umijs/max';
 import { Button, message, Popconfirm, Switch } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import MemberManageForm, { roles } from '../components/MemberManageForm';
+import SendSMS from '../components/SendSMS';
 
 const columns = (setDrawProps, tableRef) =>
   [
@@ -115,11 +116,12 @@ const columns = (setDrawProps, tableRef) =>
     },
   ].map((item) => ({ search: false, width: 120, ...item }));
 
-export default () => {
+const MemberManage = () => {
   const { courseId } = useParams();
   const tableRef = useRef();
   const [drawerProps, setDrawProps] = useState({ visible: false });
   const [course, setCourse] = useState();
+  const [list, setList] = useState([])
 
   const loadCourse = () => {
     fetchCourseList({ courseId }).then((res) => {
@@ -140,18 +142,25 @@ export default () => {
         headerTitle={course && course.title}
         actionRef={tableRef}
         pagination={{ pageSize: 20 }}
+        postData={(data) => {
+          setList(data)
+          return data
+        }}
         rowKey="id"
         columns={columns(setDrawProps, tableRef)}
         request={(params) => fetchMemberList({ ...params, courseId })}
         scroll={{ y: 458 }}
         toolBarRender={() => (
-          <Button
-            onClick={() => setDrawProps({ visible: true })}
-            icon={<PlusOutlined />}
-            type="primary"
-          >
-            新建
-          </Button>
+          <>
+            <SendSMS users={list} course={course} />
+            <Button
+              onClick={() => setDrawProps({ visible: true })}
+              icon={<PlusOutlined />}
+              type="primary"
+            >
+              新建
+            </Button>
+          </>
         )}
       />
       <MemberManageForm
@@ -162,3 +171,5 @@ export default () => {
     </PageContainer>
   );
 };
+
+export default MemberManage;
