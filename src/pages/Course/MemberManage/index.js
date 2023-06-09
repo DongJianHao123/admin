@@ -1,11 +1,14 @@
+import { getVerify, roles, verify_promissions, verify_rules } from '@/common/constants';
 import { deleteMember, fetchCourseInfo, fetchCourseList, fetchMemberList, updateMember } from '@/services/course';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { useParams } from '@umijs/max';
 import { Button, message, Popconfirm, Switch } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import MemberManageForm, { roles } from '../components/MemberManageForm';
+import MemberManageForm from '../components/MemberManageForm';
 import SendSMS from '../components/SendSMS';
+
+
 
 const columns = (setDrawProps, tableRef) =>
   [
@@ -62,9 +65,9 @@ const columns = (setDrawProps, tableRef) =>
         <Switch
           checkedChildren="允许"
           unCheckedChildren="不允许"
-          defaultChecked={val === '1'}
+          checked={[verify_rules.ALL_RIGNHT, verify_rules.ONLY_ROOM].includes(val)}
           onChange={(checked) => {
-            updateMember({ id: row.id, verify: checked ? '1' : '0' }).then(
+            updateMember({ id: row.id, verify: getVerify(val, verify_promissions.ROOM.value, checked) }).then(
               () => {
                 tableRef.current.reload();
                 message.success('操作成功');
@@ -75,9 +78,28 @@ const columns = (setDrawProps, tableRef) =>
       ),
     },
     {
-      title: '课堂链接',
-      dataIndex: 'url',
+      title: '观看回放',
+      dataIndex: 'verify',
+      render: (val, row) => (
+        <Switch
+          checkedChildren="允许"
+          unCheckedChildren="不允许"
+          checked={[verify_rules.ALL_RIGNHT, verify_rules.ONLY_PLAYBACK].includes(val)}
+          onChange={(checked) => {
+            updateMember({ id: row.id, verify: getVerify(val, verify_promissions.PLAYBACK.value, checked) }).then(
+              () => {
+                tableRef.current.reload();
+                message.success('操作成功');
+              },
+            );
+          }}
+        />
+      ),
     },
+    // {
+    //   title: '课堂链接',
+    //   dataIndex: 'url',
+    // },
     {
       title: '备注',
       dataIndex: 'tag',
@@ -116,12 +138,15 @@ const columns = (setDrawProps, tableRef) =>
     },
   ].map((item) => ({ search: false, width: 120, ...item }));
 
+
+
 const MemberManage = () => {
   const { courseId } = useParams();
   const tableRef = useRef();
   const [drawerProps, setDrawProps] = useState({ visible: false });
   const [course, setCourse] = useState();
-  const [list, setList] = useState([])
+  const [total, setTotal] = useState(0);
+  const [allUsers, setAllUsers] = useState([])
 
   const loadCourse = () => {
     fetchCourseList({ courseId }).then((res) => {
@@ -129,7 +154,13 @@ const MemberManage = () => {
     })
   }
 
-  useEffect(loadCourse, [])
+  useEffect(loadCourse, []);
+  useEffect(async () => {
+    if (total > 0) {
+      const _allUser = (await fetchMemberList({ size: total, courseId: courseId })).data;
+      setAllUsers(_allUser);
+    }
+  }, [total])
 
   return (
     <PageContainer
@@ -142,17 +173,17 @@ const MemberManage = () => {
         headerTitle={course && course.title}
         actionRef={tableRef}
         pagination={{ pageSize: 20 }}
-        postData={(data) => {
-          setList(data)
-          return data
-        }}
         rowKey="id"
         columns={columns(setDrawProps, tableRef)}
-        request={(params) => fetchMemberList({ ...params, courseId })}
+        request={async (params) => {
+          const result = await fetchMemberList({ ...params, courseId });
+          setTotal(result.total);
+          return result;
+        }}
         scroll={{ y: 458 }}
         toolBarRender={() => (
           <>
-            <SendSMS users={list} course={course} />
+            <SendSMS users={allUsers} course={course} />
             <Button
               onClick={() => setDrawProps({ visible: true })}
               icon={<PlusOutlined />}

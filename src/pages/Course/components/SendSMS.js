@@ -1,4 +1,6 @@
+import { SMS_template } from '@/common/constants';
 import U from '@/common/U';
+import { postSms } from '@/services/common';
 import { fetchMemberList } from '@/services/course';
 // import { noticeSms } from '@/utils/tencentSms';
 import { PlusOutlined } from '@ant-design/icons';
@@ -13,21 +15,23 @@ import {
   ProFormTextArea,
   ProFormTimePicker,
 } from '@ant-design/pro-components';
-import { Button, Checkbox, Form, message } from 'antd';
+import { Button, Card, Checkbox, Form, message } from 'antd';
 import { size } from 'lodash';
 import { useEffect, useState } from 'react';
 import '../../../style/Course/sendSms.less';
+import { login } from "../../../services/ant-design-pro/api"
 
 
 const SendSMS = (props) => {
   const { users, course } = props;
   const [form] = Form.useForm();
 
-  const [students, setStudents] = useState([]);
+  const [phones, setPhones] = useState([]);
   const [checkAll, setCheckAll] = useState(false);
   const [indeterminate, setIndeterminate] = useState(false);
+  const [students, setStudents] = useState([]);
+  const [smsData, setSmsData] = useState({});
 
-  // const [students, setStudents] = useState(users);
   const formItemLayOut = {
     labelCol: { span: 6 },
     wrapperCol: { span: 14 },
@@ -36,12 +40,12 @@ const SendSMS = (props) => {
   const phonesChanges = (values) => {
     const selected = form.getFieldValue("phones");
     if (!selected) return;
-    setCheckAll(selected.length === students.length);
-    setIndeterminate(selected.length > 0 && selected.length < students.length)
+    setCheckAll(selected.length === phones.length);
+    setIndeterminate(selected.length > 0 && selected.length < phones.length)
   }
 
   const onCheck = (e) => {
-    form.setFieldValue("phones", (e.target.checked ? students : []));
+    form.setFieldValue("phones", (e.target.checked ? phones : []));
     setIndeterminate(false);
     setCheckAll(e.target.checked);
   }
@@ -56,67 +60,53 @@ const SendSMS = (props) => {
           key: id,
           value: phone,
           label: name + '<' + phone + '>',
+          name: name
         })
       }
     });
-    setStudents(_student.map(({ value }) => value))
+    setPhones(_student.map(({ value }) => value))
+    setStudents(_student)
+    console.log(students);
     return _student;
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     const { phones = [], notes, date, time } = values;
     const { title, roomId } = course;
 
     let smsInfo = {
       index: 0,
-      location: roomId,
+      name: "同学您好",
       notes: notes,
       phone: phones,
-      start_time: new Date(),
-      title,
+      date: date,
+      title: "《" + title + "》",
     };
-    console.log(smsInfo);
-
-    fetch('https://api.maodouketang.com/api/v1/msms/inform', {
-      method: 'posT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...smsInfo }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.errcode === 200) {
-          console.log('send msms succeed.');
-        } else {
-          console.log('Failed to send msms:', res);
-        }
-      })
-      .catch((err) => console.log('Failed to send msms:', err));
-
-    // console.log(values);
-    // phones.forEach((phone) => {
-    // let student = users.find((item) => item.phone === phone);
-    // let { name } = student;
-    // let param_1 = '尊敬的' + name;
-    // let param_2 = `《${title}》`;
-    // let param_3 = date + ' ' + time;
-    // let param_4 = notes;
-
-    // let params = {
-    //   PhoneNumberSet: ['+86' + phone],
-    //   TemplateParamSet: [param_1, param_2, param_3, param_4],
-    // };
-    // console.log(params);
-    // noticeSms(params);
-    // });
-
+    try {
+      const res = await postSms(smsInfo);
+      if (res.errcode === 200) {
+        message.success('发送成功');
+        return true;
+      } else {
+        message.error('发送失败,请重试');
+        return false
+      }
+    } catch (error) {
+      message.error("发送失败")
+      console.log("发送错误", error);
+      return false
+    }
   };
-  // useEffect(()=>console.log(form.getFieldsValue()),[form.getFieldsValue()])
+  const changeData = (field, value) => {
+    smsData[field] = value;
+    setSmsData({ ...smsData })
+    console.log(smsData);
+  }
+
   return (
     <ModalForm
       title="发送短信通知"
-      width={950}
+      width={1300}
       trigger={<Button type="primary" onClick={() => console.log(form)}>短信通知</Button>}
       form={form}
       {...formItemLayOut}
@@ -129,55 +119,61 @@ const SendSMS = (props) => {
       className="send-sms"
       submitTimeout={2000}
       onFinish={async (values) => {
-        await onSubmit(values);
-        message.success('提交成功');
-        return true;
+        return onSubmit(values);
+      }}
+      onFieldsChange={(e) => {
+        changeData(e[0].name[0], e[0].value)
       }}
     >
+      <div className='preview'>
+        <Card title="短信预览" style={{ width: "100%" }}>
+          <p>
+            {SMS_template[0].getContent("同学您好", `《${course ? course.title : ""}》`, smsData["date"], smsData.notes)}
+          </p>
+        </Card>
+      </div>
+      <div className='form'>
+        <ProFormSelect
+          request={async () => {
+            return studentFilter(users);
+          }}
+          fieldProps={{
+            mode: 'multiple',
+            onChange: phonesChanges
+          }}
+          rules={[
+            { required: true, message: '请选择至少一名学生', type: 'array' },
+          ]}
+          width="lg"
+          name="phones"
+          label="联系人"
+          placeholder={'请选择联系人'}
+          allowClear
+          addonAfter={<Checkbox onChange={onCheck} indeterminate={indeterminate} checked={checkAll}>全选</Checkbox>}
+        />
 
-      <ProFormSelect
-        request={async () => {
-          return studentFilter(users);
-        }}
-        fieldProps={{
-          mode: 'multiple',
-          onChange: phonesChanges
-        }}
-        rules={[
-          { required: true, message: '请选择至少一名学生', type: 'array' },
-        ]}
-        width="lg"
-        name="phones"
-        label="联系人"
-        placeholder={'请选择联系人'}
-        allowClear
-        addonAfter={<Checkbox onChange={onCheck} indeterminate={indeterminate} checked={checkAll}>全选</Checkbox>}
-      />
-{/* 
-      <ProFormDatePicker
-        width="sm"
-        name="date"
-        label="上课日期"
-        rules={[{ required: true, message: '请选择上课日期' }]}
-      />
-      <ProFormTimePicker
-        width="sm"
-        name="time"
-        label="上课时间"
-        rules={[{ required: true, message: '请输入上课时间' }]}
-      /> */}
-      <ProFormTextArea
-        width="lg"
-        name="notes"
-        label="备注"
-        rules={[{ required: true, message: '请输入备注内容' }]}
-        fieldProps={{
-          // defaultValue:,
-          showCount: true,
-          maxLength: 300,
-        }}
-        placeholder="请输入内容"
-      />
+        <ProFormText
+          width="sm"
+          name="date"
+          label="上课日期"
+          rules={[{ required: true, message: '请输入上课时间' }]}
+        />
+
+        <ProFormTextArea
+          width="lg"
+          name="notes"
+          label="备注"
+          rules={[{ required: true, message: '请输入备注内容' }]}
+          fieldProps={{
+            showCount: true,
+            maxLength: 300,
+            defaultValue: "上课链接："
+          }}
+          placeholder="请输入内容"
+        />
+      </div>
+
+
     </ModalForm>
   );
 };

@@ -30,27 +30,37 @@ const columns = (registInfos = [], courses = []) =>
       search: true,
       width: 80,
     },
+    // {
+    //   title: '状态',
+    //   dataIndex: 'status',
+    //   align: 'center',
+    //   width: 100,
+    //   render: (status, row) => {
+    //     let { phone } = row;
+    //     let openNum = registInfos.filter(
+    //       (item) => item.phone === phone && item.verify === '1',
+    //     ).length;
+    //     let closeNum = registInfos.filter(
+    //       (item) => item.phone === phone && item.verify === '0',
+    //     ).length;
+    //     return (
+    //       <div>
+    //         <Tag color={'success'}>已启用 : {openNum}</Tag>
+    //         <div />
+    //         <Tag style={{ marginTop: '5px' }}>已禁用 : {closeNum}</Tag>
+    //       </div>
+    //     );
+    //   },
+    // },
     {
-      title: '状态',
-      dataIndex: 'status',
-      align: 'center',
-      width: 100,
-      render: (status, row) => {
-        let { phone } = row;
-        let openNum = registInfos.filter(
-          (item) => item.phone === phone && item.verify === '1',
-        ).length;
-        let closeNum = registInfos.filter(
-          (item) => item.phone === phone && item.verify === '0',
-        ).length;
-        return (
-          <div>
-            <Tag color={'success'}>已启用 : {openNum}</Tag>
-            <div />
-            <Tag style={{ marginTop: '5px' }}>已禁用 : {closeNum}</Tag>
-          </div>
-        );
-      },
+        title: '报名课次',
+        dataIndex: 'phone',
+        align: 'center',
+        width: 50,
+        render: (phone, row) => {
+          let myRegist = registInfos.filter((item) => item.phone === phone);
+          return <p>{myRegist.length}次</p>
+        },
     },
     {
       title: '操作',
@@ -79,7 +89,7 @@ const columns = (registInfos = [], courses = []) =>
                   <div  style={{display:"flex",gap: "10px"}}>
                     <span>课程号:{courseId}</span>
                     <span style={{flex:1}}>{courses.length > 0 && courses.find((item) => item.value.endsWith(courseId)).label}</span>
-                    <span>状态:{' '}{verify === '1' ? <Tag color={'success'}>启用</Tag> : <Tag>禁用</Tag>}</span>
+                    {/* <span>状态:{' '}{verify === '1' ? <Tag color={'success'}>启用</Tag> : <Tag>禁用</Tag>}</span> */}
                   </div>
 
                 </Menu.Item>

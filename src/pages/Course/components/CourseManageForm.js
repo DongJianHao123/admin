@@ -18,6 +18,9 @@ import { isEmpty, isUndefined } from 'lodash';
 import { useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
+
+
 const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
   const [form] = Form.useForm();
   const handleImgUpload = (file) => {
@@ -72,7 +75,7 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
       {...props}
       form={form}
       drawerProps={{
-        maskClosable: false,
+        // maskClosable: false,
         onClose: handleClose,
         destroyOnClose: true,
       }}
@@ -164,9 +167,9 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
         name="teacher"
         label="任课教师"
         colProps={{ md: 12, xl: 16 }}
-        required
+        // required
         placeholder="请输入"
-        rules={requiredRule}
+      // rules={requiredRule}
       />
       <ProFormUploadButton
         name="coverUrl"
@@ -198,7 +201,7 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
             },
           ]}
         >
-          <ReactQuill theme="snow" style={{ height: 210 }} />
+          <ReactQuill theme="snow" style={{ height: 600 }} placeholder="请输入课程简介" />
         </Form.Item>
       </Col>
       <Form.Item name="courseId" noStyle />

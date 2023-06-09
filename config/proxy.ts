@@ -26,6 +26,13 @@ export default {
         '^/maodou': '',
       },
     },
+    '/maodou-api': {
+      target: 'http://101.201.249.16:4000',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/maodou-api': '',
+      },
+    },
   },
   /**
    * @name 详细的代理配置
