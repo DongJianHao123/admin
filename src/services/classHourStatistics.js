@@ -4,7 +4,7 @@ import moment from 'moment';
 import { fetchCourseList } from './course';
 
 export async function getCourseList() {
-  return fetchCourseList().then(({data}) => {
+  return fetchCourseList().then(({ data }) => {
     console.log(data);
     return data
       .map((item) => ({
@@ -51,21 +51,22 @@ export async function fetchCourseStatisticData(params) {
       .filter((item) => item.duration);
     return {
       ...resp,
-      data: [
-        ...addListIndex(data),
-        ...(data.length > 0
-          ? [
-            {
-              index: data.length + 1,
-              name: '时长统计',
-              ...resp.daySum,
-            },
-          ]
-          : []),
-      ].map((item, _i, self) => ({
-        ...item,
-        dataLength: self.length,
-      })),
+      // data: [
+      //   ...addListIndex(data),
+      //   ...(data.length > 0
+      //     ? [
+      //       {
+      //         index: data.length + 1,
+      //         name: '时长统计',
+      //         ...resp.daySum,
+      //       },
+      //     ]
+      //     : []),
+      // ].map((item, _i, self) => ({
+      //   ...item,
+      //   dataLength: self.length,
+      // })),
+      data: data,
       success: true,
     };
   });

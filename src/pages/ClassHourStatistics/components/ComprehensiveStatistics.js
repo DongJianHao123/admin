@@ -104,9 +104,10 @@ const packColumns = (dateRec) =>
     },
     {
       title: '序号',
-      dataIndex: 'index',
+      dataIndex: 'userId',
       align: 'center',
-      width: 80,
+      width: 60,
+      renderText: (_, row, index) => index + 1,
       onCell,
     },
     {
@@ -146,6 +147,9 @@ const packColumns = (dateRec) =>
       dataIndex: 'duration',
       align: 'center',
       width: 80,
+      sorter: {
+        compare: (x, y) => x.duration - y.duration,
+      },
       renderText: secondsParse,
       onCell,
     },
@@ -153,6 +157,7 @@ const packColumns = (dateRec) =>
       title: item[0],
       dataIndex: item[0],
       width: 100,
+      align:"center",
       renderText: secondsParse,
     })),
   ].map((item) => ({
@@ -161,7 +166,7 @@ const packColumns = (dateRec) =>
     render,
   }));
 
-export default () => {
+const ComprehensiveStatistics = () => {
   const [timeRange, setTimeRange] = useState({});
   const [dateRec, setDateRec] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -264,6 +269,7 @@ export default () => {
           }
         }
         setTotalDuration(allDuratin)
+        console.log(11111, dataSource);
         return dataSource;
       }}
       headerTitle={
@@ -284,3 +290,5 @@ export default () => {
     />
   );
 };
+
+export default ComprehensiveStatistics;

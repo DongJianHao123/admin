@@ -46,6 +46,7 @@ const SendSMS = (props) => {
 
   const onCheck = (e) => {
     form.setFieldValue("phones", (e.target.checked ? phones : []));
+    changeData("phones", e.target.checked ? phones : [])
     setIndeterminate(false);
     setCheckAll(e.target.checked);
   }
@@ -66,7 +67,7 @@ const SendSMS = (props) => {
     });
     setPhones(_student.map(({ value }) => value))
     setStudents(_student)
-    console.log(students);
+    // console.log(students);
     return _student;
   };
 
@@ -103,18 +104,24 @@ const SendSMS = (props) => {
     console.log(smsData);
   }
 
+  const onFormCancle = () => {
+    setCheckAll(false)
+    setIndeterminate(false);
+    setSmsData({ phones: [] })
+  }
+
   return (
     <ModalForm
       title="发送短信通知"
       width={1300}
-      trigger={<Button type="primary" onClick={() => console.log(form)}>短信通知</Button>}
+      trigger={<Button type="primary" >短信通知</Button>}
       form={form}
       {...formItemLayOut}
       autoFocusFirstInput
       layout="horizontal"
       modalProps={{
         destroyOnClose: true,
-        onCancel: () => console.log('run'),
+        onCancel: () => onFormCancle(),
       }}
       className="send-sms"
       submitTimeout={2000}
@@ -139,7 +146,8 @@ const SendSMS = (props) => {
           }}
           fieldProps={{
             mode: 'multiple',
-            onChange: phonesChanges
+            onChange: phonesChanges,
+            maxTagCount: 10,
           }}
           rules={[
             { required: true, message: '请选择至少一名学生', type: 'array' },
@@ -149,7 +157,10 @@ const SendSMS = (props) => {
           label="联系人"
           placeholder={'请选择联系人'}
           allowClear
-          addonAfter={<Checkbox onChange={onCheck} indeterminate={indeterminate} checked={checkAll}>全选</Checkbox>}
+          addonAfter={<>
+          <Checkbox onChange={onCheck} indeterminate={indeterminate} checked={checkAll}>全选</Checkbox>
+          <span>{`${smsData.phones?.length || 0}/${students.length}`}</span>
+          </>}
         />
 
         <ProFormText
