@@ -2,7 +2,6 @@ import { SMS_template } from '@/common/constants';
 import U from '@/common/U';
 import { postSms } from '@/services/common';
 import { fetchMemberList } from '@/services/course';
-// import { noticeSms } from '@/utils/tencentSms';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   ModalForm,
@@ -37,11 +36,17 @@ const SendSMS = (props) => {
     wrapperCol: { span: 14 },
   };
 
-  const phonesChanges = (values) => {
+  const phonesChanges = () => {
     const selected = form.getFieldValue("phones");
     if (!selected) return;
     setCheckAll(selected.length === phones.length);
     setIndeterminate(selected.length > 0 && selected.length < phones.length)
+  }
+
+  const changeData = (field, value) => {
+    smsData[field] = value;
+    setSmsData({ ...smsData })
+    console.log(smsData);
   }
 
   const onCheck = (e) => {
@@ -85,6 +90,8 @@ const SendSMS = (props) => {
     };
     try {
       const res = await postSms(smsInfo);
+      setCheckAll(false);
+      setIndeterminate(false);
       if (res.errcode === 200) {
         message.success('发送成功');
         return true;
@@ -98,11 +105,7 @@ const SendSMS = (props) => {
       return false
     }
   };
-  const changeData = (field, value) => {
-    smsData[field] = value;
-    setSmsData({ ...smsData })
-    console.log(smsData);
-  }
+
 
   const onFormCancle = () => {
     setCheckAll(false)
@@ -158,8 +161,8 @@ const SendSMS = (props) => {
           placeholder={'请选择联系人'}
           allowClear
           addonAfter={<>
-          <Checkbox onChange={onCheck} indeterminate={indeterminate} checked={checkAll}>全选</Checkbox>
-          <span>{`${smsData.phones?.length || 0}/${students.length}`}</span>
+            <Checkbox onChange={onCheck} indeterminate={indeterminate} checked={checkAll}>全选</Checkbox>
+            <span>{`${smsData.phones?.length || 0}/${students.length}`}</span>
           </>}
         />
 

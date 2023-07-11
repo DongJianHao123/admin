@@ -58,6 +58,12 @@ export default [
     component: './Students',
   },
   {
+    path: '/operate',
+    name: 'operate',
+    icon: 'FundProjectionScreenOutlined',
+    component: './Operate',
+  },
+  {
     path: '/class/hour/statistics',
     name: 'class.hour.statistics',
     icon: 'CarryOutOutlined',

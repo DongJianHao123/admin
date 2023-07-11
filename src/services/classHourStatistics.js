@@ -16,7 +16,6 @@ export async function getCourseList() {
           self.findIndex((i) => i.value === item.value) === index,
       )
   }
-
   );
 }
 

@@ -1,3 +1,4 @@
+import ReactQuillEditor from '@/components/ReactQuill';
 import {
   createCourse,
   fetchAllCourse,
@@ -17,6 +18,7 @@ import { Col, Form } from 'antd';
 import { isEmpty, isUndefined } from 'lodash';
 import { useEffect } from 'react';
 import ReactQuill from 'react-quill';
+// import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 

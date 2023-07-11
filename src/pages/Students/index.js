@@ -1,3 +1,4 @@
+import U from '@/common/U';
 import { getCourseList } from '@/services/classHourStatistics';
 import { getAllActions } from '@/services/client';
 import { fetchMemberList } from '@/services/course';
@@ -30,6 +31,14 @@ const columns = (registInfos = [], courses = []) =>
       search: true,
       width: 80,
     },
+    {
+      title: '报名时间',
+      dataIndex: 'createdAt',
+      align: 'center',
+      search: false,
+      width: 80,
+      render: (time) => time === "-" ? "暂无" : U.date.format(new Date(time), 'yyyy-MM-dd HH:mm:ss')
+    },
     // {
     //   title: '状态',
     //   dataIndex: 'status',
@@ -53,14 +62,14 @@ const columns = (registInfos = [], courses = []) =>
     //   },
     // },
     {
-        title: '报名课次',
-        dataIndex: 'phone',
-        align: 'center',
-        width: 50,
-        render: (phone, row) => {
-          let myRegist = registInfos.filter((item) => item.phone === phone);
-          return <p>{myRegist.length}次</p>
-        },
+      title: '报名课次',
+      dataIndex: 'phone',
+      align: 'center',
+      width: 50,
+      render: (phone, row) => {
+        let myRegist = registInfos.filter((item) => item.phone === phone);
+        return <p>{myRegist.length}次</p>
+      },
     },
     {
       title: '操作',
@@ -74,26 +83,32 @@ const columns = (registInfos = [], courses = []) =>
           <Menu>
             {myRegist.map((item, index) => {
               let { courseId, verify, uniCourseId } = item;
-              return (
-                <Menu.Item
-                  key={index}
-                  onClick={() => {
-                    history.push({
-                      pathname: `/course/member-manage/${courseId}`,
-                      search: {
-                        uniCourseId: uniCourseId,
-                      },
-                    });
-                  }}
-                >
-                  <div  style={{display:"flex",gap: "10px"}}>
-                    <span>课程号:{courseId}</span>
-                    <span style={{flex:1}}>{courses.length > 0 && courses.find((item) => item.value.endsWith(courseId)).label}</span>
-                    {/* <span>状态:{' '}{verify === '1' ? <Tag color={'success'}>启用</Tag> : <Tag>禁用</Tag>}</span> */}
-                  </div>
+              const currentCourse = courses.find((item) => item.value.endsWith(courseId))
+              if (currentCourse !== undefined) {
+                return (
+                  <Menu.Item
+                    key={index}
+                    onClick={() => {
+                      history.push({
+                        pathname: `/course/member-manage/${courseId}`,
+                        search: {
+                          uniCourseId: uniCourseId,
+                        },
+                      });
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      <span>课程号:{courseId}</span>
+                      <span style={{ flex: 1 }}>{currentCourse.label}</span>
+                      {/* <span>状态:{' '}{verify === '1' ? <Tag color={'success'}>启用</Tag> : <Tag>禁用</Tag>}</span> */}
+                    </div>
 
-                </Menu.Item>
-              );
+                  </Menu.Item>
+                );
+              } else {
+                return <></>
+              }
+
             })}
           </Menu>
         );
@@ -112,7 +127,7 @@ const columns = (registInfos = [], courses = []) =>
     },
   ].map((item) => ({ search: false, ...item }));
 
-export default () => {
+const Students = () => {
   const tableRef = useRef();
   const [students, setStudents] = useState([]);
   const [registInfos, setRegistInfos] = useState([]);
@@ -163,6 +178,8 @@ export default () => {
   );
 };
 
+export default Students;
+
     // {
     //   title: '使用设备数',
     //   dataIndex: 'equipments',
@@ -197,7 +214,7 @@ export default () => {
     //   },
     // },
 
-    
+
   // const loadActions = () => {
   //   // console.log("开始");
   //   students.forEach((item, index) => {

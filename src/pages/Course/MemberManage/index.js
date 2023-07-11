@@ -1,4 +1,5 @@
 import { getVerify, roles, verify_promissions, verify_rules } from '@/common/constants';
+import U from '@/common/U';
 import { deleteMember, fetchCourseInfo, fetchCourseList, fetchMemberList, updateMember } from '@/services/course';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
@@ -27,6 +28,14 @@ const columns = (setDrawProps, tableRef) =>
       title: '手机号',
       dataIndex: 'phone',
       search: true,
+    },
+    {
+      title: '报名时间',
+      dataIndex: 'createdAt',
+      align: 'center',
+      search: false,
+      width: 80,
+      render: (time) => time === "-" ? "暂无" : U.date.format(new Date(time), 'yyyy-MM-dd HH:mm:ss')
     },
     {
       title: '性别',
@@ -103,7 +112,7 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '备注',
       dataIndex: 'tag',
-      width: 200,
+      width: 60,
     },
     {
       title: '操作',
@@ -155,6 +164,7 @@ const MemberManage = () => {
   }
 
   useEffect(loadCourse, []);
+  // TODO try fix
   useEffect(async () => {
     if (total > 0) {
       const _allUser = (await fetchMemberList({ size: total, courseId: courseId })).data;
