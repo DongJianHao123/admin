@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = "http://localhost:4000"
+const BASE_URL = "http://101.201.249.16:4000"
 
 export async function postSms(smsInfo) {
   let res = await axios(

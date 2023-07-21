@@ -57,7 +57,7 @@ export const SMS_template = [
     value: 1641362,
     label: "课程报名",
     params: [SMS_PARAMS.TITLE, SMS_PARAMS.NAME, SMS_PARAMS.DATE, SMS_PARAMS.NOTE],
-    getContent: ([signature = "", title = "", call = "", date = "", note = ""]) => `【${signature}】您好，${title}即将开始，由${call}亲临授课，报名时间截止到${date}， 不要错过哦! 备注： ${note} 。 回T退订`,
+    getContent: ([signature = "", title = "", call = "", date = "", note = ""]) => `【${signature}】您好，《${title}》即将开讲，由 ${call} 亲临授课，报名时间截止到${date}， 不要错过哦! 备注： ${note} 。 回T退订`,
   },
 ]
 

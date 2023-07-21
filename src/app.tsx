@@ -1,6 +1,6 @@
 import RightContent from '@/components/RightContent';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
-import type { RunTimeLayoutConfig } from '@umijs/max';
+import type { RuntimeAntdConfig } from '@umijs/max';
 import { history } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
@@ -43,9 +43,9 @@ export async function getInitialState(): Promise<{
 }
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({
+export const layout: RuntimeAntdConfig = ({
   initialState,
-}) => {
+}: any) => {
   return {
     rightContentRender: () => <RightContent />,
     onPageChange: () => {
@@ -86,7 +86,7 @@ export const layout: RunTimeLayoutConfig = ({
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
-    childrenRender: (children) => {
+    childrenRender: (children: any) => {
       return (
         <>
           {children}

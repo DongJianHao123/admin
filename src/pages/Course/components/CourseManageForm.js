@@ -1,4 +1,3 @@
-import ReactQuillEditor from '@/components/ReactQuill';
 import {
   createCourse,
   fetchAllCourse,
@@ -18,8 +17,40 @@ import { Col, Form } from 'antd';
 import { isEmpty, isUndefined } from 'lodash';
 import { useEffect } from 'react';
 import ReactQuill from 'react-quill';
-// import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
+const modules = {
+  // 方式1: 可以是简单的一维数组配置
+  // toolbar: ["bold", "italic", "underline", "strike", "blockquote"]
+  // 方式2: 可以配置二维数组，进行多个选项的配置
+  toolbar: [
+    ["bold", "italic", "underline", "strike", "blockquote", "code-block"],
+    [{ align: [] }],
+    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+    ["link", "image", "video"],
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    [{ 'font': [] }],
+    [{ color: [] }, { background: [] }],
+    ["clean"],
+  ],
+  // ImageResize: {
+  //   // ...
+  //   toolbarStyles: {
+  //     backgroundColor: 'black',
+  //     border: 'none',
+  //     color: white
+  //     // other camelCase styles for size display
+  //   },
+  //   toolbarButtonStyles: {
+  //     // ...
+  //   },
+  //   toolbarButtonSvgStyles: {
+  //     // ...
+  //   },
+  // }
+  // 方式3: 可以自己指定工具栏的容器
+  // toolbar: "#rq-toolbar"
+};
 
 
 
@@ -203,7 +234,7 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
             },
           ]}
         >
-          <ReactQuill theme="snow" style={{ height: 600 }} placeholder="请输入课程简介" />
+          <ReactQuill theme="snow" modules={modules} style={{ height: 600 }} placeholder="请输入课程简介" />
         </Form.Item>
       </Col>
       <Form.Item name="courseId" noStyle />

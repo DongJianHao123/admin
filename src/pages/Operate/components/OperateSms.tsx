@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ProForm, ProFormSelect, ProFormText, ProFormTextArea } from '@ant-design/pro-components';
-import { Form, message } from 'antd';
+import { Form, message, Modal } from 'antd';
 import Card from 'antd/lib/card/Card';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { getCourseList } from '@/services/classHourStatistics';
@@ -9,6 +9,7 @@ import { fetchMemberList } from '@/services/course';
 import './index.less'
 
 import { SMS_PARAMS, SMS_template } from '@/common/constants';
+const { confirm } = Modal;
 
 const ALL_STUDENTS_SIZE = 3000;
 const OperateSms = () => {
@@ -20,15 +21,8 @@ const OperateSms = () => {
   const [smsData, setSmsData] = useState<any>({});
   const [signature, setSignature] = useState<string>("");
   const [template, setTemplate] = useState<any>();
-  const [studentsLoading, setStudentsLoading] = useState<boolean>(false)
+  const [studentsLoading] = useState<boolean>(false)
   const [courses, setCourse] = useState<any[]>([])
-
-
-  useEffect(() => {
-    getSignature(getClient().clientId).then((res) => {
-      setSignature(res)
-    })
-  }, [])
 
   const formItemLayOut = {
     labelCol: { span: 6 },
@@ -49,6 +43,21 @@ const OperateSms = () => {
     setIndeterminate(selected.length > 0 && selected.length < phones.length)
   }
 
+  const clearPhones = () => {
+    setCheckAll(false);
+    setIndeterminate(false);
+    form.setFieldValue("phones", [])
+    setSmsData({ ...smsData, phones: [] })
+  }
+
+  const changeData = (field: string, value: any) => {
+    smsData[field] = value;
+    setSmsData({ ...smsData })
+    if (field === "template") {
+      setTemplate(SMS_template.find((item) => item.value === value))
+      console.log(template);
+    }
+  }
 
   const onCheck = (e: any) => {
     form.setFieldValue("phones", (e.target.checked ? phones : []));
@@ -61,40 +70,27 @@ const OperateSms = () => {
     let data = (await fetchMemberList({ size: ALL_STUDENTS_SIZE, courseId })).data || [];
     let _students: any[] = [];
     let _phones: string[] = []
-    data.forEach(async (item: any, index: number) => {
+    data.forEach(async (item: any) => {
       let { phone, name } = item;
       if (_students.findIndex((item) => item.includes(phone)) < 0) {
         _students.push([phone, `${name}<${phone}>`]);
         _phones.push(phone)
       }
     });
+    clearPhones()
     setPhones([..._phones])
     setStudents(new Map([..._students]));
   }
 
   const onSendToChange = async (e: string) => {
+    const label = `《${courses.find((item) => item.value === e)?.label}》`;
+    form.setFieldValue('title', label);
+    smsData["title"] = label;
+    setSmsData({ ...smsData })
     await (e === "1" ? changeStudentsByCourseId() : changeStudentsByCourseId(e.slice(-3)))
   }
 
-  const changeData = (field: string, value: any) => {
-    smsData[field] = value;
-    setSmsData({ ...smsData })
-    if (field === "template") {
-      setTemplate(SMS_template.find((item) => item.value === value))
-      console.log(template);
-
-    }
-    console.log(courses);
-    if (field === "sendTo") {
-      onSendToChange(value);
-      const label = `《${courses.find((item) => item.value === value)?.label}》`
-      form.setFieldValue('title', label);
-      smsData["title"] = label;
-      setSmsData({ ...smsData })
-    }
-  }
-
-  const onSubmit = async (values: any) => {
+  const sendSms = async (values: any) => {
     let smsInfo = {
       templateId: template.value,
       signature: signature,
@@ -103,8 +99,6 @@ const OperateSms = () => {
     };
     try {
       const res = await postSms(smsInfo);
-      setCheckAll(false);
-      setIndeterminate(false);
       if (res.errcode === 200) {
         message.success('发送成功');
         return true;
@@ -117,7 +111,23 @@ const OperateSms = () => {
       console.log("发送错误", error);
       return false
     }
+  }
+
+  const onSubmit = async (values: any) => {
+    confirm({
+      title: '您确定要发送信息吗？',
+      onOk() {
+        sendSms(values);
+        clearPhones()
+      },
+    })
   };
+
+  useEffect(() => {
+    getSignature(getClient().clientId).then((res) => {
+      setSignature(res)
+    })
+  }, [])
 
   const paramArr = [signature].concat(template?.params.map((item: string) => smsData[item]))
 
@@ -147,6 +157,9 @@ const OperateSms = () => {
           setCourse([...courseList])
           courseList.unshift({ label: "全部", value: "1" })
           return courseList;
+        }}
+        fieldProps={{
+          onChange: (e: string) => onSendToChange(e)
         }}
         rules={[
           { required: true, message: '请选择需要发送的课程' },
@@ -192,10 +205,10 @@ const OperateSms = () => {
       />
 
       <ProForm.Group>
-        {template?.params.map((param: string) => {
-
+        {template?.params.map((param: string, index: number) => {
           if (param === SMS_PARAMS.NAME) {
             return <ProFormText
+              key={index}
               width="lg"
               name="call"
               label="称呼"
@@ -203,6 +216,7 @@ const OperateSms = () => {
             />
           } else if (param === SMS_PARAMS.TITLE) {
             return <ProFormText
+              key={index}
               width="lg"
               name="title"
               label="标题"
@@ -210,13 +224,15 @@ const OperateSms = () => {
             />
           } else if (param === SMS_PARAMS.DATE) {
             return <ProFormText
+              key={index}
               width="lg"
               name="date"
-              label="上课日期"
-              rules={[{ required: true, message: '请输入上课时间' }]}
+              label="日期"
+              rules={[{ required: true, message: '请输入时间' }]}
             />
           } else if (param === SMS_PARAMS.ROLE) {
             return <ProFormText
+              key={index}
               width="lg"
               name="role"
               label="角色"
@@ -224,6 +240,7 @@ const OperateSms = () => {
             />
           } else if (param === SMS_PARAMS.NOTE) {
             return <ProFormTextArea
+              key={index}
               width="lg"
               name="note"
               label="备注"
@@ -235,6 +252,8 @@ const OperateSms = () => {
               }}
               placeholder="请输入内容"
             />
+          } else {
+            return <></>
           }
         })}
       </ProForm.Group>

@@ -11,16 +11,16 @@ const Operate = () => {
         key: 'sms',
         children: <OperateSms />,
       },
-      {
-        tab: '邮件通知',
-        key: 'email',
-        children: <></>,
-      },
-      {
-        tab: '统计信息',
-        key: 'statistics',
-        children: <></>,
-      }
+        // {
+        //   tab: '邮件通知',
+        //   key: 'email',
+        //   children: <></>,
+        // },
+        // {
+        //   tab: '统计信息',
+        //   key: 'statistics',
+        //   children: <></>,
+        // }
     ]}>
       {/* this is operate page! */}
     </PageContainer>

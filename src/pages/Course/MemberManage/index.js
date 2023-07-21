@@ -7,7 +7,6 @@ import { useParams } from '@umijs/max';
 import { Button, message, Popconfirm, Switch } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import MemberManageForm from '../components/MemberManageForm';
-import SendSMS from '../components/SendSMS';
 
 
 
@@ -193,7 +192,6 @@ const MemberManage = () => {
         scroll={{ y: 458 }}
         toolBarRender={() => (
           <>
-            <SendSMS users={allUsers} course={course} />
             <Button
               onClick={() => setDrawProps({ visible: true })}
               icon={<PlusOutlined />}
