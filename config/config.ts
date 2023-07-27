@@ -16,7 +16,7 @@ export default defineConfig({
   // define: {
   //   'process.env.clientId': 466, //421为毛豆课堂测试账号，381为司康英语
   // },
-  // history: { type: 'hash' },
+  history: { type: 'hash' },
   // outputPath: '/dist/admin/',
   /**
    * @name 开启 hash 模式

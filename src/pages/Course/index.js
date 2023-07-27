@@ -116,6 +116,15 @@ const Course = () => {
       id: row?.id,
     });
   };
+
+  const filterParams = (params, fields = []) => {
+    let _params = {}
+    fields.forEach((field) => {
+      _params[field] = params[field]
+    })
+    return _params;
+  }
+
   return (
     <PageContainer>
       <ProTable
@@ -124,8 +133,9 @@ const Course = () => {
         rowKey="id"
         columns={columns(handleDrawerOpen, tableRef)}
         request={async (params) => {
-          params = U.obj.RemoveNulls(params)
-          return await fetchCourseList(params)
+          const _params = filterParams(params, ["title", "courseId", "current", "pageSize"]);
+          U.obj.RemoveNulls(_params)
+          return await fetchCourseList(_params)
         }}
         scroll={{ y: 458 }}
         toolBarRender={() => (

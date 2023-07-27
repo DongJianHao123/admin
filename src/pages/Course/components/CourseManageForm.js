@@ -1,3 +1,6 @@
+import U from '@/common/U';
+import ChatgptDrawer from '@/components/ChatgptDrawer';
+import { getChatGptProcess } from '@/services/common';
 import {
   createCourse,
   fetchAllCourse,
@@ -8,14 +11,15 @@ import { fileUpload, requiredRule } from '@/utils';
 import {
   DrawerForm,
   ProFormDigit,
+  ProFormField,
   ProFormSelect,
   ProFormText,
   ProFormUploadButton,
 } from '@ant-design/pro-components';
 import { useRequest } from '@umijs/max';
-import { Col, Form } from 'antd';
+import { Button, Col, Drawer, Form, Popconfirm, message } from 'antd';
 import { isEmpty, isUndefined } from 'lodash';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -56,6 +60,9 @@ const modules = {
 
 const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [chatgptOpen, setChatgptOpen] = useState(false);
+  const [title, setTitle] = useState("")
   const handleImgUpload = (file) => {
     fileUpload(file).then((res) => {
       form.setFieldsValue({
@@ -92,6 +99,16 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
     );
   };
 
+  const openChatgpt = () => {
+    const title = form.getFieldValue("title");
+    if (U.str.isEmpty(title)) {
+      message.warn("请先输入课程名称")
+    } else {
+      setChatgptOpen(true)
+    }
+  }
+
+
   useEffect(() => {
     if (isUndefined(id)) {
       props.visible &&
@@ -103,16 +120,21 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
     }
   }, [id, props.visible]);
 
+  useEffect(() => {
+    chatgptOpen && setTitle(form.getFieldValue('title'))
+  }, [chatgptOpen])
+
   return (
-    <DrawerForm
+    <>    <DrawerForm
       {...props}
       form={form}
       drawerProps={{
-        // maskClosable: false,
+        maskClosable: false,
         onClose: handleClose,
         destroyOnClose: true,
       }}
       width="60%"
+      key={"right"}
       title={isUndefined(id) ? '创建课程' : '编辑课程'}
       grid
       initialValues={{
@@ -200,9 +222,7 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
         name="teacher"
         label="任课教师"
         colProps={{ md: 12, xl: 16 }}
-        // required
         placeholder="请输入"
-      // rules={requiredRule}
       />
       <ProFormUploadButton
         name="coverUrl"
@@ -218,6 +238,9 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
         extra="建议图片比例为16:9"
         accept="image/*"
       />
+      <ProFormField>
+        <Button ghost onClick={() => openChatgpt()} type='primary'>生成课程介绍</Button>
+      </ProFormField>
       <Col span={24}>
         <Form.Item
           label="课程介绍"
@@ -240,6 +263,8 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
       <Form.Item name="courseId" noStyle />
       <Form.Item name="id" noStyle />
     </DrawerForm>
+      <ChatgptDrawer open={chatgptOpen} handleClose={() => setChatgptOpen(false)} prompt={`《${title}》的课程大纲`} />
+    </>
   );
 };
 

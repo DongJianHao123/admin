@@ -27,8 +27,8 @@ export default [
     component: './Dashboard',
   },
   {
-    path: '/homepage/conf',
-    name: 'homepage.conf',
+    path: '/homepage',
+    name: 'homepage',
     icon: 'home',
     component: './Homepage',
   },
