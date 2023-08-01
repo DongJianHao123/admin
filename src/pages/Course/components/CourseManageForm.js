@@ -224,6 +224,12 @@ const CourseManageForm = ({ id, handleClose, tableReload, ...props }) => {
         colProps={{ md: 12, xl: 16 }}
         placeholder="请输入"
       />
+      {/* <ProFormText
+      name="gradeLevel"
+      label="等级"
+      colProps={{ md: 12, xl: 16 }}
+      placeholder="请输入"
+    /> */}
       <ProFormUploadButton
         name="coverUrl"
         label="课程图片"

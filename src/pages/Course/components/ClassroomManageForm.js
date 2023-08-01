@@ -3,13 +3,14 @@ import {
   fetchClassroomInfo,
   updateClassroom,
 } from '@/services/course';
-import { requiredRule } from '@/utils';
+import { fileUpload, requiredRule } from '@/utils';
 import {
   DrawerForm,
   ProFormDateTimePicker,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
+  ProFormUploadButton,
 } from '@ant-design/pro-components';
 import { useRequest, useSearchParams } from '@umijs/max';
 import { Form } from 'antd';
@@ -25,15 +26,30 @@ export default ({ id, course, handleClose, tableReload, ...props }) => {
     if (!isUndefined(id)) run(id).then(form.setFieldsValue);
   }, [id]);
 
+  const handleImgUpload = (file, field) => {
+    console.log(file);
+    fileUpload(file).then((res) => {
+      console.log(res);
+      form.setFieldsValue({
+        [field]: [
+          Object.assign(file, {
+            url: `https://ssl.cdn.maodouketang.com/${res.key}`,
+          }),
+        ],
+      });
+    });
+  };
+
   const handleSubmit = async (values) => {
     return (
       isUndefined(id)
         ? createClassroom({
-            courseId: searchParams.get('courseId'),
-            roomId: searchParams.get('roomId'),
-            ...values,
-          })
-        : updateClassroom(values)
+          courseId: searchParams.get('courseId'),
+          roomId: searchParams.get('roomId'),
+          ...values,
+          coverUrl: values.coverUrl[0].url
+        })
+        : updateClassroom({ ...values, coverUrl: values.coverUrl[0].url })
     ).then(() => {
       tableReload();
       handleClose();
@@ -65,6 +81,18 @@ export default ({ id, course, handleClose, tableReload, ...props }) => {
         placeholder="请输入"
         rules={requiredRule}
       />
+      <ProFormUploadButton
+        name="coverUrl"
+        label="封面图"
+        max={1}
+        fieldProps={{
+          name: 'file',
+          listType: 'picture-card',
+        }}
+        labelCol={{ span: 2 }}
+        action={(file) => handleImgUpload(file, 'coverUrl')}
+        extra="建议图片比例为16:9"
+      />
       <ProFormSelect
         name="type"
         label="课堂类型"
@@ -87,7 +115,7 @@ export default ({ id, course, handleClose, tableReload, ...props }) => {
       />
       <ProFormDateTimePicker
         name="startAt"
-        label="开课时间"
+        label="上课时间"
         colProps={{ md: 24, xl: 12 }}
         required
         placeholder="请选择"

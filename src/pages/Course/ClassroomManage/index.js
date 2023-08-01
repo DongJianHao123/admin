@@ -45,6 +45,14 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
       dataIndex: 'index',
       align: 'center',
       width: 80,
+      render: (_, row, index) => index + 1
+    },
+    {
+      title: '封面图',
+      dataIndex: 'coverUrl',
+      align: 'center',
+      width: 160,
+      render: (coverUrl, row, index) => coverUrl !== '-' ? <img style={{borderRadius:'4px',width: "140px", height: "79px" }} className="cover" src={coverUrl} /> : <div>暂无</div>
     },
     {
       title: '课堂名称',
@@ -66,15 +74,19 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
       dataIndex: 'startAt',
       align: 'center',
       valueType: 'dateTime',
+      defaultSortOrder: 'descend',
+      sorter: {
+        compare: (a, b) => new Date(b.startAt).getTime() - new Date(a.startAt).getTime(),
+      },
       width: 140,
     },
-    {
-      title: '结束时间',
-      dataIndex: 'endAt',
-      align: 'center',
-      valueType: 'dateTime',
-      width: 140,
-    },
+    // {
+    //   title: '结束时间',
+    //   dataIndex: 'endAt',
+    //   align: 'center',
+    //   valueType: 'dateTime',
+    //   width: 140,
+    // },
     {
       title: '时长',
       dataIndex: 'duration',
@@ -136,7 +148,7 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
     },
   ].map((item) => ({ search: false, width: 120, ...item }));
 
-export default () => {
+const ClassroomManage = () => {
   const [searchParams] = useSearchParams();
   const [drawerProps, setDrawerProps] = useState({ visible: false });
   const [importProps, setImportProps] = useState({ visible: false });
@@ -223,3 +235,5 @@ export default () => {
     </PageContainer>
   );
 };
+
+export default ClassroomManage;
