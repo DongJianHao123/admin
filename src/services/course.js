@@ -119,7 +119,11 @@ export async function fetchCourseInfo(id) {
 }
 
 export async function fetchClassroomInfo(id) {
-  return request(`/seller/api/course-classes/${id}`);
+  const res = await request(`/seller/api/course-classes/${id}`);
+  return {
+    ...res,
+    coverUrl: [{ url: res.coverUrl }]
+  }
 }
 
 export async function createClassroom(data) {

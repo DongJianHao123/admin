@@ -87,14 +87,15 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
     //   valueType: 'dateTime',
     //   width: 140,
     // },
-    {
-      title: '时长',
-      dataIndex: 'duration',
-      align: 'center',
-    },
+    // {
+    //   title: '时长',
+    //   dataIndex: 'duration',
+    //   align: 'center',
+    // },
     {
       title: '上课地点',
       dataIndex: 'location',
+      align:"center"
     },
     {
       title: '备注',

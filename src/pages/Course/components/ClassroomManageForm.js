@@ -70,7 +70,7 @@ export default ({ id, course, handleClose, tableReload, ...props }) => {
       initialValues={{
         type: 2,
       }}
-      values={data}
+      // values={data}
       onFinish={handleSubmit}
     >
       <ProFormText
