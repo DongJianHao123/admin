@@ -68,6 +68,17 @@ export async function fileUpload(
   });
 }
 
+export function fileUpload2(file, bucketName = 'maodouketang') {
+  const token = getFileUploadToken(bucketName);
+  const config = {
+    useCdnDomain: true, //表示是否使用 cdn 加速域名，为布尔值，true 表示使用，默认为 false。
+    region: qiNiu.region.z3, // 根据具体提示修改上传地区,当为 null 或 undefined 时，自动分析上传域名区域
+  };
+
+  const observable = qiNiu.upload(file, null, token, {}, config);
+  return observable;
+}
+
 /**
  * antd 框架分页参数转为api分页参数
  */
@@ -90,12 +101,12 @@ export const history = {
   push: (to, state) => {
     !isString(to) && isObject(to?.search)
       ? umiHistory.push(
-          {
-            ...to,
-            search: stringify(to.search),
-          },
-          state,
-        )
+        {
+          ...to,
+          search: stringify(to.search),
+        },
+        state,
+      )
       : umiHistory.push(to, state);
   },
 };

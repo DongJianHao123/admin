@@ -1,9 +1,10 @@
 import U from '@/common/U';
+import { data2Excel } from '@/common/data2Excel';
 import { getCourseList } from '@/services/classHourStatistics';
 import { getAllActions } from '@/services/client';
 import { fetchMemberList } from '@/services/course';
 import { history } from '@/utils';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, ExportOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { Button, Dropdown, Menu, Space, Tag } from 'antd';
 import { useEffect, useRef, useState } from 'react';
@@ -132,6 +133,7 @@ const Students = () => {
   const [students, setStudents] = useState([]);
   const [registInfos, setRegistInfos] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   const loadData = async (params) => {
     let students =
@@ -145,9 +147,13 @@ const Students = () => {
     setRegistInfos([...students]);
     let _students = [];
     students.forEach(async (item, index) => {
-      let { phone } = item;
-      if (_students.findIndex((item) => item.phone === phone) < 0) {
-        _students.push({ ...item, index: _students.length + 1 });
+      let { phone, courseId } = item;
+      let _index = _students.findIndex((item) => item.phone === phone)
+
+      if (_index < 0) {
+        _students.push({ ...item, index: _students.length + 1, courseIds: courseId });
+      } else {
+        _students[_index].courseIds += (',' + item.courseId)
       }
     });
     setStudents([..._students]);
@@ -155,9 +161,28 @@ const Students = () => {
   const loadCourses = () => {
     getCourseList().then((res) => {
       setCourses(res)
-      console.log(res);
     })
   }
+
+  const getCourseNameByCourseId = (courseId) => {
+    const curr = courses.find((item) => item.value.endsWith(courseId))
+    return !curr ? `` : `《${curr.label}》;`
+  }
+
+  const studentsExport = () => {
+    setLoading(true)
+    data2Excel(`学生信息表-${U.date.format(new Date(), "yyyy-MM-dd")}`, [
+      {
+        sheetData: students,  //excel文件中的数据源
+        sheetName: "表1",  //excel文件中sheet页名称
+        sheetFilter: ["index", "name", "gender", "phone", "createdAt", "courseIds", "age", "tag"],  //excel文件中需显示的列数据
+        sheetHeader: ["序号", "姓名", "性别", "联系方式", "报名时间", "报名课程号", "年级", "备注"], //excel文件中每列的表头名称
+        columnWidths: [4, 5, 5, 5, 10, 10, 15, 10]
+      }
+    ])
+    setLoading(false)
+  }
+
   useEffect(() => { loadCourses() }, [])
 
   return (
@@ -173,6 +198,9 @@ const Students = () => {
         request={async (params) => loadData(params)}
         dataSource={students}
         scroll={{ y: 500 }}
+        toolBarRender={() => {
+          return <Button type="primary" loading={loading} icon={<ExportOutlined />} onClick={() => { studentsExport() }} >导出学生信息</Button>
+        }}
       />
     </PageContainer>
   );

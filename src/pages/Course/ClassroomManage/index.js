@@ -11,7 +11,7 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import { useRequest, useSearchParams } from '@umijs/max';
-import { Button, message, Switch, Upload } from 'antd';
+import { Button, message, Popconfirm, Switch, Upload } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { history } from 'umi';
 import BatchImportProps from '../components/BatchImportProps';
@@ -52,7 +52,7 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
       dataIndex: 'coverUrl',
       align: 'center',
       width: 160,
-      render: (coverUrl, row, index) => coverUrl !== '-' ? <img style={{borderRadius:'4px',width: "140px", height: "79px" }} className="cover" src={coverUrl} /> : <div>暂无</div>
+      render: (coverUrl, row, index) => coverUrl !== '-' ? <img style={{ borderRadius: '4px', width: "140px", height: "79px" }} className="cover" src={coverUrl} /> : <div>暂无</div>
     },
     {
       title: '课堂名称',
@@ -95,7 +95,7 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
     {
       title: '上课地点',
       dataIndex: 'location',
-      align:"center"
+      align: "center"
     },
     {
       title: '备注',
@@ -127,14 +127,19 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
           >
             编辑
           </Button>
-          <Button
-            onClick={() => deleteRow(row)}
-            size="small"
-            type="link"
-            danger
+          <Popconfirm
+            title="确定删除?"
+            onConfirm={() => deleteRow(row)}
           >
-            删除
-          </Button>
+            <Button
+
+              size="small"
+              type="link"
+              danger
+            >
+              删除
+            </Button>
+          </Popconfirm>
           <Button
             size="small"
             type="link"

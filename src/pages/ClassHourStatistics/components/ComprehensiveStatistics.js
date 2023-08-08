@@ -13,6 +13,7 @@ import { useRef, useState } from 'react';
 import * as XLSX from "xlsx"
 import ExportJsonExcel from "js-export-excel"
 import { ExportOutlined } from '@ant-design/icons';
+import { data2Excel } from '@/common/data2Excel';
 
 let isSortAction = false;
 let dataSource = [];
@@ -157,7 +158,7 @@ const packColumns = (dateRec) =>
       title: item[0],
       dataIndex: item[0],
       width: 100,
-      align:"center",
+      align: "center",
       renderText: secondsParse,
     })),
   ].map((item) => ({
@@ -184,9 +185,7 @@ const ComprehensiveStatistics = () => {
     }
     setLoading(true)
     parseExcelData().then((res) => {
-      let option = {};  //option代表的就是excel文件
-      option.fileName = "课时统计表";  //excel文件名称
-      option.datas = [
+      data2Excel("课时统计表", [
         {
           sheetData: res,  //excel文件中的数据源
           sheetName: "表1",  //excel文件中sheet页名称
@@ -194,14 +193,10 @@ const ComprehensiveStatistics = () => {
           sheetHeader: ["序号", "姓名", "联系方式", "出勤次数", "上课时长", ...dateRec.map((item) => item[0])], //excel文件中每列的表头名称
           columnWidths: [4, 5, 5, 5, 10, 10, ...dateRec.map(() => 10)]
         }
-      ]
-      let toExcel = new ExportJsonExcel(option);  //生成excel文件
-      toExcel.saveExcel();  //下载excel文件
+      ])
       setLoading(false);
-      message.success("数据导出成功")
     }).catch((err) => {
       message.error("导出出错,请刷新重试")
-      console.log(err);
       setLoading(false)
     });
   }
@@ -217,7 +212,7 @@ const ComprehensiveStatistics = () => {
         }
       })
       try {
-        tableData.map((item, index) => {
+        tableData.forEach((item, index) => {
           let _item = {
             index: index + 1,
             name: item.name,

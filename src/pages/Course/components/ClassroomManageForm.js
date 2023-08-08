@@ -1,33 +1,37 @@
-import {
-  createClassroom,
-  fetchClassroomInfo,
-  updateClassroom,
-} from '@/services/course';
-import { fileUpload, requiredRule } from '@/utils';
+import { useEffect, useState } from 'react';
+import { UploadOutlined } from '@ant-design/icons';
 import {
   DrawerForm,
   ProFormDateTimePicker,
+  ProFormField,
+  ProFormItem,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
   ProFormUploadButton,
 } from '@ant-design/pro-components';
 import { useRequest, useSearchParams } from '@umijs/max';
-import { Form } from 'antd';
+import { Button, Form, Progress, Upload, message } from 'antd';
 import { isUndefined } from 'lodash';
-import { useEffect } from 'react';
+import { createClassroom, fetchClassroomInfo, updateClassroom } from '@/services/course';
+import { fileUpload, fileUpload2, requiredRule } from '@/utils';
 
-export default ({ id, course, handleClose, tableReload, ...props }) => {
+const ClassroomManageForm = ({ id, course, handleClose, tableReload, ...props }) => {
+
+  const [video, setVideo] = useState({});
+  const [loading, setLoading] = useState(false)
   const [form] = Form.useForm();
   const { data = {}, run } = useRequest(fetchClassroomInfo, { manual: true });
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    if (!isUndefined(id)) run(id).then(form.setFieldsValue);
+    if (!isUndefined(id)) run(id).then((res) => {
+      form.setFieldsValue(res)
+      setVideo({ ...video, url: res.choseUrl })
+    })
   }, [id]);
 
   const handleImgUpload = (file, field) => {
-    console.log(file);
     fileUpload(file).then((res) => {
       console.log(res);
       form.setFieldsValue({
@@ -40,6 +44,23 @@ export default ({ id, course, handleClose, tableReload, ...props }) => {
     });
   };
 
+  const handleVideoUpload = (file, field) => {
+    setVideo({ percent: 0, _status: "active" })
+    setLoading(true)
+    const observable = fileUpload2(file)
+    observable.subscribe({
+      error: (err) => { console.log(err) },
+      complete: (res) => {
+        setVideo({ ...video, percent: 100, _status: 'success', url: `https://ssl.cdn.maodouketang.com/${res.key}` })
+        message.success("上传成功")
+      },
+      next: (res) => {
+        let progress = res.total.percent.toFixed(0);
+        setVideo({ ...video, percent: progress, _status: 'active' })
+      },
+    })
+  }
+
   const handleSubmit = async (values) => {
     return (
       isUndefined(id)
@@ -47,14 +68,19 @@ export default ({ id, course, handleClose, tableReload, ...props }) => {
           courseId: searchParams.get('courseId'),
           roomId: searchParams.get('roomId'),
           ...values,
-          coverUrl: values.coverUrl[0].url
+          coverUrl: values.coverUrl[0].url,
+          choseUrl: video.url
         })
-        : updateClassroom({ ...values, coverUrl: values.coverUrl[0].url })
+        : updateClassroom({ ...values, coverUrl: values.coverUrl[0].url, choseUrl: video.url })
     ).then(() => {
       tableReload();
       handleClose();
     });
   };
+
+  useEffect(() => {
+    !props.visible && setLoading(false) && setVideo({})
+  }, [props.visible])
 
   return (
     <DrawerForm
@@ -70,12 +96,19 @@ export default ({ id, course, handleClose, tableReload, ...props }) => {
       initialValues={{
         type: 2,
       }}
-      // values={data}
       onFinish={handleSubmit}
     >
       <ProFormText
         name="className"
         label="课堂名称"
+        colProps={{ md: 24, xl: 12 }}
+        required
+        placeholder="请输入"
+        rules={requiredRule}
+      />
+      <ProFormText
+        name="courseId"
+        label="课程号"
         colProps={{ md: 24, xl: 12 }}
         required
         placeholder="请输入"
@@ -93,6 +126,23 @@ export default ({ id, course, handleClose, tableReload, ...props }) => {
         action={(file) => handleImgUpload(file, 'coverUrl')}
         extra="建议图片比例为16:9"
       />
+      <ProFormField
+        name='choseUrl'
+        label='课程视频'
+        required
+        rules={requiredRule}
+      >
+        <Upload
+          maxCount={1}
+          fileList={[]}
+          action={(e) => handleVideoUpload(e, "choseUrl")}
+        >
+          <Button icon={<UploadOutlined />}>上传</Button>
+        </Upload>
+        {loading && <Progress percent={video.percent} status={video._status} />}
+        {!!video.url && (video._status === "active" ? <span>正在上传</span> : <a href={video.url} target='_blank' rel="noreferrer">{video.url}</a>)}
+      </ProFormField>
+
       <ProFormSelect
         name="type"
         label="课堂类型"
@@ -131,6 +181,8 @@ export default ({ id, course, handleClose, tableReload, ...props }) => {
         rules={requiredRule}
       />
       <Form.Item name="id" noStyle />
-    </DrawerForm>
+    </DrawerForm >
   );
 };
+
+export default ClassroomManageForm
