@@ -21,8 +21,6 @@ export async function getCourseList() {
 }
 
 export async function fetchCourseDateRec(params) {
-  console.log("=====");
-  console.log(params);
   const _startTime = typeof params.startTime === "string" ? params.startTime : params.startTime.$d
   const _endTime = typeof params.endTime === "string" ? params.endTime : params.endTime.$d
   const tmp = {
@@ -36,8 +34,29 @@ export async function fetchCourseDateRec(params) {
   });
 }
 
+export async function fetchStudentsLiveStatic(params) {
+  const _startTime = typeof params.startTime === "string" ? params.startTime : params.startTime.$d
+  const _endTime = typeof params.endTime === "string" ? params.endTime : params.endTime.$d
+
+  return request('/analysis/api/room-timesget/getUserTimesWithTotalNumByConditions', {
+    params: {
+      clientId: 385,
+      ...params,
+      sort: "startTime,desc",
+      role:"student",
+      startTime: new Date(_startTime),
+      endTime: new Date(_endTime)
+    }
+  }).then((res) => {
+    return {
+      success: true,
+      total: res.totalNum,
+      data: res.userTimeList
+    }
+  })
+}
+
 export async function fetchCourseStatisticData(params) {
-  console.log("进入方法", params);
   const _startTime = typeof params.startTime === "string" ? params.startTime : params.startTime.$d
   const _endTime = typeof params.endTime === "string" ? params.endTime : params.endTime.$d
   return request('/analysis/api/studentRoomTimeDetailStatistics', {

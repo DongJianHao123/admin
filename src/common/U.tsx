@@ -59,6 +59,26 @@ const U = {
   },
 
   date: {
+    remainingTime: (remainTime: number) => {
+      let day: number = parseInt((remainTime / (24 * 3600 * 1000)).toString())
+
+      let hour = parseInt(((remainTime % (24 * 3600 * 1000)) / 3600000).toString());
+
+      let minute = parseInt(((remainTime % 3600000) / 60000).toString());
+
+      let second = parseInt(((remainTime % 60000) / 1000).toString());
+
+      let res = '';
+      if (day > 0) {
+        res = day + '天';
+      } if (hour > 0) {
+        res = res + (hour + '时')
+      } if (minute > 0) {
+        res = res + (minute + '分')
+      }
+      res = res + (second + '秒')
+      return res;
+    },
     format: (date: Date, _fmt: string): string | null => {
       if (!date || !_fmt) {
         return null;

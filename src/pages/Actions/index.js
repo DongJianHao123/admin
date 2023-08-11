@@ -162,20 +162,7 @@ const columns = [
 const Actions = () => {
 
   return (
-    <PageContainer
-    // tabList={[
-    //   {
-    //     tab: '行为统计',
-    //     key: 'ActionStatistics',
-    //     children:<></>
-    //   },
-    //   {
-    //     tab: '观看回放统计',
-    //     key: 'ComprehensiveStatistics',
-    //     children: <div>123</div>,
-    //   },
-    // ]}
-    >
+    <PageContainer>
       <ProTable
         className="action-table"
         rowKey="index"
@@ -187,8 +174,8 @@ const Actions = () => {
             isSortAction = false;
             return dataSource;
           }
-          params = U.obj.RemoveNulls(params)
-          dataSource = await actions(params);
+          let _params = U.obj.RemoveNulls(params)
+          dataSource = await actions(_params);
           return dataSource
         }}
         pagination={true}
