@@ -9,6 +9,6 @@ export default {
   'menu.class.hour.statistics': '课时统计',
   'menu.marketing.module': '营销模板',
   'menu.students': '学生管理',
-  'menu.actions': '实时行为统计',
+  'menu.actions': '行为统计',
   'menu.operate': '运营管理',
 };

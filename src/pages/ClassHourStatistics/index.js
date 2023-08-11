@@ -4,7 +4,7 @@ import ComprehensiveStatistics from './components/ComprehensiveStatistics';
 import StudentClassHourStatistics from './components/StudentClassHourStatistics';
 import TeacherClassHourStatistics from './components/TeacherClassHourStatistics';
 
-export default () => {
+const ClassHourStatistics = () => {
   return (
     <PageContainer
       tabList={[
@@ -32,3 +32,5 @@ export default () => {
     />
   );
 };
+
+export default ClassHourStatistics

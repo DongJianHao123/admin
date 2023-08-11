@@ -92,15 +92,18 @@ const packColumns = (dateRec) =>
       search: true,
       valueType: 'dateRange',
       // colSize: 2,
-      initialValue: [moment().add(-1, 'd'), moment().add(-1, 'd')],
+      initialValue: [moment().add(-1, 'd'), moment().add(0, 'd')],
       fieldProps: {
         allowClear: false,
       },
       search: {
-        transform: ([start, end]) => ({
-          startTime: start,
-          endTime: end,
-        }),
+        transform: ([start, end]) => {
+          console.log("transform", start, end);
+          return {
+            startTime: start,
+            endTime: end,
+          }
+        }
       },
     },
     {
@@ -271,7 +274,7 @@ const ComprehensiveStatistics = () => {
         <span style={{ color: '#1890ff' }}>时长统计 {secondsParse(totalDuration)}</span>
       }
       toolBarRender={() => {
-        return <Button type="primary" loading={loading} icon={<ExportOutlined />} onClick={downloadFileToExcel} >导出excel</Button>
+        return <Button type="primary" loading={loading} icon={<ExportOutlined />} onClick={() => console.log(moment().add(-1, 'd'))} >导出excel</Button>
 
       }}
       pagination={false}

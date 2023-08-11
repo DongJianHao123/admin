@@ -1,12 +1,13 @@
 import { getVerify, roles, verify_promissions, verify_rules } from '@/common/constants';
 import U from '@/common/U';
 import { deleteMember, fetchCourseInfo, fetchCourseList, fetchMemberList, updateMember } from '@/services/course';
-import { PlusOutlined } from '@ant-design/icons';
+import { ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { useParams } from '@umijs/max';
 import { Button, message, Popconfirm, Switch } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import MemberManageForm from '../components/MemberManageForm';
+import { data2Excel } from '@/common/data2Excel';
 
 
 
@@ -155,12 +156,28 @@ const MemberManage = () => {
   const [course, setCourse] = useState();
   const [total, setTotal] = useState(0);
   const [allUsers, setAllUsers] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const loadCourse = () => {
     fetchCourseList({ courseId }).then((res) => {
       setCourse(res.data[0])
     })
   }
+
+  const studentsExport = () => {
+    setLoading(true)
+    data2Excel(`《${course.title}》学生信息表-${U.date.format(new Date(), "yyyy-MM-dd")}`, [
+      {
+        sheetData: allUsers,  //excel文件中的数据源
+        sheetName: "表1",  //excel文件中sheet页名称
+        sheetFilter: ["index", "name", "gender", "phone", "createdAt", "age", "verify"],  //excel文件中需显示的列数据
+        sheetHeader: ["序号", "姓名", "性别", "联系方式", "报名时间", "年级", "权限"], //excel文件中每列的表头名称
+        columnWidths: [4, 5, 5, 5, 10, 10, 15, 10]
+      }
+    ])
+    setLoading(false)
+  }
+
 
   useEffect(loadCourse, []);
   // TODO try fix
@@ -181,7 +198,7 @@ const MemberManage = () => {
       <ProTable
         headerTitle={course && course.title}
         actionRef={tableRef}
-        pagination={{ pageSize: 20 }}
+        // pagination={{ pageSize: 20 }}
         rowKey="id"
         columns={columns(setDrawProps, tableRef)}
         request={async (params) => {
@@ -192,6 +209,7 @@ const MemberManage = () => {
         scroll={{ y: 458 }}
         toolBarRender={() => (
           <>
+            <Button type="primary" loading={loading} icon={<ExportOutlined />} onClick={() => { studentsExport() }}>导出</Button>
             <Button
               onClick={() => setDrawProps({ visible: true })}
               icon={<PlusOutlined />}
