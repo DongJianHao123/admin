@@ -79,6 +79,18 @@ const U = {
       res = res + (second + '秒')
       return res;
     },
+    remainingHour: (remainTime: number) => {
+      let res = remainTime >= 0 ? '' : '-';
+      let _remainTime = remainTime >= 0 ? remainTime : remainTime * (-1)
+      let hour = parseInt((_remainTime / 3600).toString());
+      let minute = parseInt(((_remainTime % 3600) / 60).toString());
+      if (hour >= 0) {
+        res = res + (hour + '时')
+      } if (minute >= 0) {
+        res = res + (minute + '分')
+      }
+      return res;
+    },
     format: (date: Date, _fmt: string): string | null => {
       if (!date || !_fmt) {
         return null;

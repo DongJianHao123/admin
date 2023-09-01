@@ -1,6 +1,17 @@
-import { getVerify, roles, verify_promissions, verify_rules } from '@/common/constants';
+import {
+  getVerify,
+  roles,
+  verify_promissions,
+  verify_rules,
+} from '@/common/constants';
 import U from '@/common/U';
-import { deleteMember, fetchCourseInfo, fetchCourseList, fetchMemberList, updateMember } from '@/services/course';
+import {
+  deleteMember,
+  fetchCourseInfo,
+  fetchCourseList,
+  fetchMemberList,
+  updateMember,
+} from '@/services/course';
 import { ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { useParams } from '@umijs/max';
@@ -8,8 +19,6 @@ import { Button, message, Popconfirm, Switch } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import MemberManageForm from '../components/MemberManageForm';
 import { data2Excel } from '@/common/data2Excel';
-
-
 
 const columns = (setDrawProps, tableRef) =>
   [
@@ -21,12 +30,14 @@ const columns = (setDrawProps, tableRef) =>
     },
     {
       title: '姓名',
+      align: 'center',
       dataIndex: 'name',
       search: true,
     },
     {
       title: '手机号',
       dataIndex: 'phone',
+      align: 'center',
       search: true,
     },
     {
@@ -34,8 +45,11 @@ const columns = (setDrawProps, tableRef) =>
       dataIndex: 'createdAt',
       align: 'center',
       search: false,
-      width: 80,
-      render: (time) => time === "-" ? "暂无" : U.date.format(new Date(time), 'yyyy-MM-dd HH:mm:ss')
+      // width: 80,
+      render: (time) =>
+        time === '-'
+          ? '暂无'
+          : U.date.format(new Date(time), 'yyyy-MM-dd HH:mm:ss'),
     },
     {
       title: '性别',
@@ -58,6 +72,7 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '年级',
       dataIndex: 'age',
+      align: 'center',
     },
     {
       title: '角色',
@@ -74,14 +89,17 @@ const columns = (setDrawProps, tableRef) =>
         <Switch
           checkedChildren="允许"
           unCheckedChildren="不允许"
-          checked={[verify_rules.ALL_RIGNHT, verify_rules.ONLY_ROOM].includes(val)}
+          checked={[verify_rules.ALL_RIGNHT, verify_rules.ONLY_ROOM].includes(
+            val,
+          )}
           onChange={(checked) => {
-            updateMember({ id: row.id, verify: getVerify(val, verify_promissions.ROOM.value, checked) }).then(
-              () => {
-                tableRef.current.reload();
-                message.success('操作成功');
-              },
-            );
+            updateMember({
+              id: row.id,
+              verify: getVerify(val, verify_promissions.ROOM.value, checked),
+            }).then(() => {
+              tableRef.current.reload();
+              message.success('操作成功');
+            });
           }}
         />
       ),
@@ -93,14 +111,22 @@ const columns = (setDrawProps, tableRef) =>
         <Switch
           checkedChildren="允许"
           unCheckedChildren="不允许"
-          checked={[verify_rules.ALL_RIGNHT, verify_rules.ONLY_PLAYBACK].includes(val)}
+          checked={[
+            verify_rules.ALL_RIGNHT,
+            verify_rules.ONLY_PLAYBACK,
+          ].includes(val)}
           onChange={(checked) => {
-            updateMember({ id: row.id, verify: getVerify(val, verify_promissions.PLAYBACK.value, checked) }).then(
-              () => {
-                tableRef.current.reload();
-                message.success('操作成功');
-              },
-            );
+            updateMember({
+              id: row.id,
+              verify: getVerify(
+                val,
+                verify_promissions.PLAYBACK.value,
+                checked,
+              ),
+            }).then(() => {
+              tableRef.current.reload();
+              message.success('操作成功');
+            });
           }}
         />
       ),
@@ -112,7 +138,6 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '备注',
       dataIndex: 'tag',
-      width: 60,
     },
     {
       title: '操作',
@@ -147,46 +172,67 @@ const columns = (setDrawProps, tableRef) =>
     },
   ].map((item) => ({ search: false, width: 120, ...item }));
 
-
-
 const MemberManage = () => {
   const { courseId } = useParams();
   const tableRef = useRef();
   const [drawerProps, setDrawProps] = useState({ visible: false });
   const [course, setCourse] = useState();
   const [total, setTotal] = useState(0);
-  const [allUsers, setAllUsers] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [allUsers, setAllUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const loadCourse = () => {
     fetchCourseList({ courseId }).then((res) => {
-      setCourse(res.data[0])
-    })
-  }
+      setCourse(res.data[0]);
+    });
+  };
 
   const studentsExport = () => {
-    setLoading(true)
-    data2Excel(`《${course.title}》学生信息表-${U.date.format(new Date(), "yyyy-MM-dd")}`, [
-      {
-        sheetData: allUsers,  //excel文件中的数据源
-        sheetName: "表1",  //excel文件中sheet页名称
-        sheetFilter: ["index", "name", "gender", "phone", "createdAt", "age", "verify"],  //excel文件中需显示的列数据
-        sheetHeader: ["序号", "姓名", "性别", "联系方式", "报名时间", "年级", "权限"], //excel文件中每列的表头名称
-        columnWidths: [4, 5, 5, 5, 10, 10, 15, 10]
-      }
-    ])
-    setLoading(false)
-  }
-
+    setLoading(true);
+    data2Excel(
+      `《${course.title}》学生信息表-${U.date.format(
+        new Date(),
+        'yyyy-MM-dd',
+      )}`,
+      [
+        {
+          sheetData: allUsers, //excel文件中的数据源
+          sheetName: '表1', //excel文件中sheet页名称
+          sheetFilter: [
+            'index',
+            'name',
+            'gender',
+            'phone',
+            'createdAt',
+            'age',
+            'verify',
+          ], //excel文件中需显示的列数据
+          sheetHeader: [
+            '序号',
+            '姓名',
+            '性别',
+            '联系方式',
+            '报名时间',
+            '年级',
+            '权限',
+          ], //excel文件中每列的表头名称
+          columnWidths: [4, 5, 5, 5, 10, 10, 15, 10],
+        },
+      ],
+    );
+    setLoading(false);
+  };
 
   useEffect(loadCourse, []);
   // TODO try fix
   useEffect(async () => {
     if (total > 0) {
-      const _allUser = (await fetchMemberList({ size: total, courseId: courseId })).data;
+      const _allUser = (
+        await fetchMemberList({ size: total, courseId: courseId })
+      ).data;
       setAllUsers(_allUser);
     }
-  }, [total])
+  }, [total]);
 
   return (
     <PageContainer
@@ -206,10 +252,19 @@ const MemberManage = () => {
           setTotal(result.total);
           return result;
         }}
-        scroll={{ y: 458 }}
+        // scroll={{ y: 458 }}
         toolBarRender={() => (
           <>
-            <Button type="primary" loading={loading} icon={<ExportOutlined />} onClick={() => { studentsExport() }}>导出</Button>
+            <Button
+              type="primary"
+              loading={loading}
+              icon={<ExportOutlined />}
+              onClick={() => {
+                studentsExport();
+              }}
+            >
+              导出
+            </Button>
             <Button
               onClick={() => setDrawProps({ visible: true })}
               icon={<PlusOutlined />}

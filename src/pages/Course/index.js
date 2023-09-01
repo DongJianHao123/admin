@@ -1,13 +1,13 @@
-import U from '@/common/U';
-import { fetchCourseList, updateCourse } from '@/services/course';
-import { history } from '@/utils';
+import { useRef, useState } from 'react';
+import { Button, Popconfirm } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { Button, Popconfirm } from 'antd';
-import { useRef, useState } from 'react';
-import CourseManageForm from './components/CourseManageForm';
+import { fetchCourseList, updateCourse } from '@/services/course';
 
-const columns = (openDrawer, tableRef) =>
+import { history } from '@/utils';
+import U from '@/common/U';
+
+const columns = (tableRef) =>
   [
     {
       title: '序号',
@@ -86,7 +86,11 @@ const columns = (openDrawer, tableRef) =>
           >
             课堂管理
           </Button>
-          <Button onClick={() => openDrawer(row)} size="small" type="link">
+          <Button
+            onClick={() => history.push(`/course/edit/${row.id}`)}
+            size="small"
+            type="link"
+          >
             编辑
           </Button>
           <Popconfirm
@@ -107,23 +111,15 @@ const columns = (openDrawer, tableRef) =>
   ].map((item) => ({ search: false, width: 120, ...item }));
 
 const Course = () => {
-  const [drawerProps, setDrawerProps] = useState({ visible: false });
   const tableRef = useRef();
 
-  const handleDrawerOpen = (row) => {
-    setDrawerProps({
-      visible: true,
-      id: row?.id,
-    });
-  };
-
   const filterParams = (params, fields = []) => {
-    let _params = {}
+    let _params = {};
     fields.forEach((field) => {
-      _params[field] = params[field]
-    })
+      _params[field] = params[field];
+    });
     return _params;
-  }
+  };
 
   return (
     <PageContainer>
@@ -131,31 +127,31 @@ const Course = () => {
         actionRef={tableRef}
         pagination={null}
         rowKey="id"
-        columns={columns(handleDrawerOpen, tableRef)}
+        columns={columns(tableRef)}
         request={async (params) => {
-          const _params = filterParams(params, ["title", "courseId", "current", "pageSize"]);
-          U.obj.RemoveNulls(_params)
-          return await fetchCourseList(_params)
+          const _params = filterParams(params, [
+            'title',
+            'courseId',
+            'current',
+            'pageSize',
+          ]);
+          U.obj.RemoveNulls(_params);
+          return await fetchCourseList(_params);
         }}
         scroll={{ y: 458 }}
         toolBarRender={() => (
           <Button
-            onClick={() => handleDrawerOpen()}
+            onClick={() => history.push('/course/edit/0')}
             key="button"
             icon={<PlusOutlined />}
             type="primary"
           >
-            创建课程
+            新建课程
           </Button>
         )}
-      />
-      <CourseManageForm
-        {...drawerProps}
-        tableReload={() => tableRef.current.reload()}
-        handleClose={() => setDrawerProps({ visible: false })}
       />
     </PageContainer>
   );
 };
 
-export default Course
+export default Course;

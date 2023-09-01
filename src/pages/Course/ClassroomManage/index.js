@@ -10,17 +10,16 @@ import {
   ProFormText,
   ProTable,
 } from '@ant-design/pro-components';
-import { useRequest, useSearchParams } from '@umijs/max';
+import { useRequest, useSearchParams, useParams } from '@umijs/max';
 import { Button, message, Popconfirm, Switch, Upload } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { history } from 'umi';
 import BatchImportProps from '../components/BatchImportProps';
-import ClassroomManageForm from '../components/ClassroomManageForm';
 import '../../../style/Course/classroomManage.less';
 import { useEventListener } from 'ahooks';
 import { Utils } from '@/common/Utils';
 
-const columns = (openDrawer, handleStatusChange, deleteRow) =>
+const columns = (courseId, handleStatusChange, deleteRow) =>
   [
     {
       title: '课堂状态',
@@ -121,7 +120,7 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
       render: (_, row) => (
         <>
           <Button
-            onClick={() => openDrawer({ visible: true, id: row.id })}
+            onClick={() => history.push(`/course/classroom-manage/edit/${courseId}/${row.id}`)}
             size="small"
             type="link"
           >
@@ -156,7 +155,7 @@ const columns = (openDrawer, handleStatusChange, deleteRow) =>
 
 const ClassroomManage = () => {
   const [searchParams] = useSearchParams();
-  const [drawerProps, setDrawerProps] = useState({ visible: false });
+  const { courseId } = useParams()
   const [importProps, setImportProps] = useState({ visible: false });
   const tableRef = useRef();
   const { run: runUpdateStatus } = useRequest(updateClassroomStatus, {
@@ -212,31 +211,25 @@ const ClassroomManage = () => {
         actionRef={tableRef}
         pagination={false}
         rowKey="id"
-        columns={columns(setDrawerProps, handleStatusChange, handleDelete)}
+        columns={columns(courseId, handleStatusChange, handleDelete)}
         request={async (params) =>
           fetchClassroomList({
             ...params,
             'courseId.equals': searchParams.get('courseId'),
           })
         }
-        scroll={{ y: 400 }}
         toolBarRender={() => (
           <div className="table-btn">
             <BatchImportProps reloadData={tableRef.current.reload} />
             <Button
-              onClick={() => setDrawerProps({ visible: true })}
+              onClick={() => history.push(`/course/classroom-manage/edit/${courseId}/0`)}
               icon={<PlusOutlined />}
               type="primary"
             >
-              新增
+              新建
             </Button>
           </div>
         )}
-      />
-      <ClassroomManageForm
-        tableReload={() => tableRef.current.reload()}
-        handleClose={() => setDrawerProps({ visible: false })}
-        {...drawerProps}
       />
     </PageContainer>
   );

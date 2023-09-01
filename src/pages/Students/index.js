@@ -189,15 +189,11 @@ const Students = () => {
     <PageContainer>
       <ProTable
         actionRef={tableRef}
-        pagination={{
-          pageSize: 10,
-        }}
         rowKey="id"
         columns={columns(registInfos, courses)}
         search={true}
         request={async (params) => loadData(params)}
         dataSource={students}
-        scroll={{ y: 500 }}
         toolBarRender={() => {
           return <Button type="primary" loading={loading} icon={<ExportOutlined />} onClick={() => { studentsExport() }} >导出学生信息</Button>
         }}

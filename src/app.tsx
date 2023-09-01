@@ -47,6 +47,7 @@ export const layout: RuntimeAntdConfig = ({
   initialState,
 }: any) => {
   return {
+    siderWidth: 150,
     rightContentRender: () => <RightContent />,
     onPageChange: () => {
       const { location } = history;

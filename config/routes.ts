@@ -42,12 +42,20 @@ export default [
         component: './Course',
       },
       {
+        path: '/course/edit/:courseId',
+        component: './Course/CourseEdit',
+      },
+      {
         path: '/course/member-manage/:courseId',
         component: './Course/MemberManage',
       },
       {
         path: '/course/classroom-manage/:courseId',
         component: './Course/ClassroomManage',
+      },
+      {
+        path: '/course/classroom-manage/edit/:courseId/:classroomId',
+        component:"./Course/ClassroomManage/ClassroomEdit"
       },
     ],
   },
