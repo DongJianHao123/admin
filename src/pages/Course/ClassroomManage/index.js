@@ -77,7 +77,7 @@ const columns = (courseId, handleStatusChange, deleteRow) =>
       sorter: {
         compare: (a, b) => new Date(b.startAt).getTime() - new Date(a.startAt).getTime(),
       },
-      width: 140,
+      width: 180,
     },
     // {
     //   title: '结束时间',
@@ -99,6 +99,7 @@ const columns = (courseId, handleStatusChange, deleteRow) =>
     {
       title: '备注',
       dataIndex: 'remark',
+      width:180,
     },
     {
       title: '上架/下架',

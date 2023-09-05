@@ -15,10 +15,13 @@ import U from '@/common/U';
 
 const packChartData = (rawData: any) => {
   const list = (rawData?.daySummaryList || []).reverse();
-
   return {
+    title: {
+      text: `近15天消费时长: ${U.date.remainingHour(rawData?.totalTimeLong)}`,
+    },
     tooltip: {
       formatter: ``,
+      //  trigger: 'axis'
     },
     xAxis: {
       type: 'category',
@@ -34,8 +37,16 @@ const packChartData = (rawData: any) => {
     series: [
       {
         data: list.map((item: any) => item.timeLong),
-        type: 'line',
+        type: 'bar',
         smooth: true,
+        label: {
+          show: true,
+          position: 'top',
+          formatter: (e: any) => (Math.floor(e.data / 3600) > 0 ? Math.floor(e.data / 3600) : (e.data / 3600).toFixed(1)) + "时"
+        },
+        tooltip: {
+          valueFormatter: (seconds: any) => Math.floor(seconds / 3600) + "小时",
+        },
       },
     ],
   };
@@ -43,9 +54,7 @@ const packChartData = (rawData: any) => {
 
 const Dashboard: React.FC = () => {
 
-  const [durationData, setDurationData] = useState([{ title: '购买总时长', value: '已购套餐包：3个', desc: '已购套餐包：3个' },
-  { title: '消费总时长', value: '759小时48分', desc: '日平均量：15小时30分' },
-  { title: '剩余时长', value: '500小时13分', desc: '已购套餐包：3个' },])
+  const [durationData, setDurationData] = useState<Array<{ title: string, value: string, desc: string }>>([])
   const { data, loading } = useRequest(fetchConsumptionDuration);
 
   useEffect(() => {
@@ -110,7 +119,7 @@ const Dashboard: React.FC = () => {
           ))}
         </ProCard>
       </PageContainer>
-      <PageContainer title={`近15天消费时长: ${U.date.remainingHour(data?.totalTimeLong)}`} loading={loading}>
+      <PageContainer loading={loading}>
         <ProCard direction="row" ghost gutter={[8, 8]}>
           <ProCard colSpan={14}>
             <ReactECharts
@@ -121,12 +130,14 @@ const Dashboard: React.FC = () => {
           <ProCard colSpan={10}>
             <ProTable
               rowKey="id"
+
+              style={{ height: '447px', width: '100%' }}
               pagination={false}
               toolBarRender={false}
               dataSource={data?.daySummaryList}
               search={false}
               columns={columns}
-              scroll={{ y: 400 }}
+              scroll={{ y: 360 }}
             />
           </ProCard>
         </ProCard>

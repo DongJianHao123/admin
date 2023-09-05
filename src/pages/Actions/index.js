@@ -8,6 +8,7 @@ import { Popover } from "antd";
 import { isEmpty } from "lodash";
 import moment from "moment";
 import './index.less'
+import CustomText from "@/components/CustomText";
 
 let isSortAction = false;
 let dataSource = [];
@@ -20,7 +21,7 @@ const columns = [
     dataIndex: 'index',
     valueType: 'index',
     align: 'center',
-    width: 10,
+    width: 60,
     onCell,
   },
   {
@@ -36,7 +37,7 @@ const columns = [
     dataIndex: 'roomId',
     align: "center",
     search: false,
-    width: 50,
+    width: 80,
     render: (txt) => <span style={{ wordBreak: "break-all", wordWrap: "break-word" }}>{txt}</span>
   },
   {
@@ -44,7 +45,7 @@ const columns = [
     dataIndex: 'userName',
     search: true,
     align: 'center',
-    width: 40,
+    width: 60,
     onCell: ({ dataLength }, index) => {
       if (dataLength - 1 === index) {
         return {
@@ -58,7 +59,7 @@ const columns = [
     dataIndex: 'role',
     search: true,
     valueType: 'select',
-    width: 30,
+    width: 50,
     align: "center",
     fieldProps: {
       options: [
@@ -72,7 +73,7 @@ const columns = [
     title: '手机号',
     search: true,
     dataIndex: 'userId',
-    width: 55,
+    width: 100,
     align: 'center',
     render: (txt) => <span style={{ wordBreak: "break-all", wordWrap: "break-word" }}>{txt}</span>
   },
@@ -109,7 +110,7 @@ const columns = [
   }, {
     title: '时间',
     dataIndex: 'actionTime',
-    width: 40,
+    width: 140,
     align: "center",
     search: false,
     render: (time, item, index) => {
@@ -120,7 +121,7 @@ const columns = [
   {
     title: '行为',
     dataIndex: 'actionType',
-    width: 40,
+    width: 80,
     align: "center",
     search: true,
     valueType: 'select',
@@ -134,16 +135,15 @@ const columns = [
     dataIndex: 'description',
     valueType: 'userId',
     align: 'center',
-    width: 60,
-    render: (txt) => <Popover content={<p className="table-txt-popover">{txt}</p>} title="备注"> <span className="table-txt">{txt}</span></Popover>,
+    width: 80,
+    render: (txt) => <Popover content={<p className="table-txt-popover">{txt}</p>} title="备注"> <CustomText>{txt}</CustomText></Popover>,
     onCell,
   },
   {
     title: '课程名',
     search: false,
     dataIndex: 'courseName',
-    align: 'center',
-    width: 120,
+    width: 150,
     render: (txt) => <span className="table-txt">{txt}</span>,
     onCell,
   },
@@ -151,8 +151,7 @@ const columns = [
     title: '课堂',
     dataIndex: 'courseClassName',
     search: false,
-    align: 'center',
-    width: 120,
+    width: 200,
     render: (txt) => <span className="table-txt">{txt}</span>,
     onCell,
   },
@@ -180,7 +179,7 @@ const Actions = () => {
         }}
         pagination={true}
         defaultSize="small"
-        scroll={{ x: `calc(${scrollX}px + 50%)`, y: 600 }}
+        scroll={{ x: `calc(${scrollX}px + 50%)`, }}
         onChange={(_p, _f, sorter) => {
           if (!isEmpty(sorter)) {
             isSortAction = true;

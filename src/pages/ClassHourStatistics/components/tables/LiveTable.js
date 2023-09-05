@@ -1,8 +1,12 @@
-import { ProTable } from "@ant-design/pro-components"
-import { fetchStudentsLiveStatic, getCourseList } from '@/services/classHourStatistics';
+import { ProTable } from '@ant-design/pro-components';
+import {
+  fetchStudentsLiveStatic,
+  getCourseList,
+} from '@/services/classHourStatistics';
 import { secondsParse } from '@/utils';
 import moment from 'moment';
 import { useState } from 'react';
+import U from '@/common/U';
 
 const onCell = ({ dataLength }, index) =>
   dataLength - 1 === index ? { colSpan: 0 } : {};
@@ -39,17 +43,17 @@ const columns = [
     },
     search: {
       transform: ([start, end]) => {
-        console.log("transform", start, end);
+        console.log('transform', start, end);
         return {
           startTime: start,
           endTime: end,
-        }
-      }
+        };
+      },
     },
   },
   {
     title: '序号',
-    dataIndex: 'userId',
+    dataIndex: 'index',
     align: 'center',
     width: 60,
     search: false,
@@ -76,7 +80,7 @@ const columns = [
     valueType: 'text',
     align: 'center',
     search: true,
-    width: 100,
+    width: 120,
     onCell,
   },
 
@@ -85,76 +89,80 @@ const columns = [
     dataIndex: 'roomId',
     search: true,
     valueType: 'select',
-    width: 100,
+    width: 180,
     align: 'center',
     request: getCourseList,
   },
   {
-    title: "开始时间",
-    dataIndex: "startTime",
+    title: '开始时间',
+    dataIndex: 'startTime',
     align: 'center',
     search: false,
-    width: 100,
+    width: 180,
+    render: (val) => U.date.format(new Date(val), 'yyyy-MM-dd HH:mm:ss'),
   },
   {
-    title: "结束时间",
-    dataIndex: "endTime",
+    title: '结束时间',
+    dataIndex: 'endTime',
     align: 'center',
     search: false,
-    width: 100,
+    width: 180,
+    render: (val) => U.date.format(new Date(val), 'yyyy-MM-dd HH:mm:ss'),
   },
   {
     title: '上课时长',
     dataIndex: 'timeLong',
     align: 'center',
-    width: 80,
+    width: 150,
     search: false,
     sorter: {
       compare: (x, y) => x.timeLong - y.timeLong,
     },
     renderText: secondsParse,
     onCell,
-  }, {
-    title: "上屏时间",
-    dataIndex: "onscreenTimelong",
+  },
+  {
+    title: '上屏时间',
+    dataIndex: 'onscreenTimelong',
     align: 'center',
     search: false,
     width: 100,
   },
   {
-    title: "举手(次)",
-    dataIndex: "handupNum",
+    title: '举手(次)',
+    dataIndex: 'handupNum',
     align: 'center',
     search: false,
     width: 100,
   },
   {
-    title: "上屏(次)",
-    dataIndex: "onscreenNum",
+    title: '上屏(次)',
+    dataIndex: 'onscreenNum',
     align: 'center',
     search: false,
     width: 100,
   },
   {
-    title: "聊天 (次)",
-    dataIndex: "chatNum",
+    title: '聊天 (次)',
+    dataIndex: 'chatNum',
     align: 'center',
     search: false,
     width: 100,
   },
-]
-
+];
 
 const LiveTable = () => {
-  return <ProTable
-    columns={columns}
-    search={{ labelWidth: 100, defaultCollapsed: false }}
-    request={async (params) => {
-      const dataSource = await fetchStudentsLiveStatic(params)
-      console.log(dataSource);
-      return dataSource
-    }}
-  />
-}
+  return (
+    <ProTable
+      columns={columns}
+      search={{ labelWidth: 100, defaultCollapsed: false }}
+      request={async (params) => {
+        const dataSource = await fetchStudentsLiveStatic(params);
+        console.log(dataSource);
+        return dataSource;
+      }}
+    />
+  );
+};
 
-export default LiveTable
+export default LiveTable;

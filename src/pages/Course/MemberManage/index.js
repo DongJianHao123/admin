@@ -45,7 +45,7 @@ const columns = (setDrawProps, tableRef) =>
       dataIndex: 'createdAt',
       align: 'center',
       search: false,
-      // width: 80,
+      width:180,
       render: (time) =>
         time === '-'
           ? '暂无'
@@ -56,6 +56,7 @@ const columns = (setDrawProps, tableRef) =>
       dataIndex: 'gender',
       align: 'center',
       valueType: 'select',
+      width:80,
       fieldProps: {
         options: [
           {
@@ -72,12 +73,12 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '年级',
       dataIndex: 'age',
-      align: 'center',
     },
     {
       title: '角色',
       dataIndex: 'status',
       valueType: 'select',
+      align:'center',
       fieldProps: {
         options: roles,
       },
@@ -85,6 +86,7 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '进入课堂',
       dataIndex: 'verify',
+      align:'center',
       render: (val, row) => (
         <Switch
           checkedChildren="允许"
@@ -107,6 +109,7 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '观看回放',
       dataIndex: 'verify',
+      align:'center',
       render: (val, row) => (
         <Switch
           checkedChildren="允许"
@@ -244,7 +247,6 @@ const MemberManage = () => {
       <ProTable
         headerTitle={course && course.title}
         actionRef={tableRef}
-        // pagination={{ pageSize: 20 }}
         rowKey="id"
         columns={columns(setDrawProps, tableRef)}
         request={async (params) => {
@@ -252,7 +254,7 @@ const MemberManage = () => {
           setTotal(result.total);
           return result;
         }}
-        // scroll={{ y: 458 }}
+        scroll={{ x: 900 }}
         toolBarRender={() => (
           <>
             <Button

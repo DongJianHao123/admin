@@ -1,6 +1,7 @@
 import U from '@/common/U';
 import { Action_type } from '@/common/constants';
 import { data2Excel } from '@/common/data2Excel';
+import CustomText from '@/components/CustomText';
 import { actions, playbackActions } from '@/services/actions';
 import { getCourseList } from '@/services/classHourStatistics';
 import { secondsParse } from '@/utils';
@@ -60,7 +61,7 @@ const columns = [
     dataIndex: 'index',
     valueType: 'index',
     align: 'center',
-    width: 10,
+    width: 60,
     onCell,
   },
   {
@@ -68,7 +69,7 @@ const columns = [
     dataIndex: 'userName',
     search: true,
     align: 'center',
-    width: 40,
+    width: 60,
     onCell: ({ dataLength }, index) => {
       if (dataLength - 1 === index) {
         return {
@@ -81,7 +82,7 @@ const columns = [
     title: '手机号',
     search: true,
     dataIndex: 'userId',
-    width: 55,
+    width: 120  ,
     align: 'center',
     render: (txt) => <span style={{ wordBreak: "break-all", wordWrap: "break-word" }}>{txt}</span>
   },
@@ -91,13 +92,13 @@ const columns = [
     dataIndex: 'roomId',
     align: "center",
     search: false,
-    width: 50,
+    width: 80,
     render: (txt) => <span style={{ wordBreak: "break-all", wordWrap: "break-word" }}>{txt}</span>
   },
   {
     title: '最近观看时间',
     dataIndex: 'actionTime',
-    width: 40,
+    width: 160,
     align: "center",
     search: false,
     render: (time, item, index) => {
@@ -107,7 +108,7 @@ const columns = [
   {
     title: '行为',
     dataIndex: 'actionType',
-    width: 40,
+    width: 80,
     align: "center",
     search: false,
     valueType: 'select',
@@ -120,7 +121,7 @@ const columns = [
     search: false,
     dataIndex: 'description',
     align: 'center',
-    width: 60,
+    width: 120,
     onCell,
     render: (val) => U.date.remainingTime(val * 1000),
     sorter: {
@@ -132,24 +133,24 @@ const columns = [
     search: false,
     dataIndex: 'viewNum',
     align: 'center',
-    width: 60
+    width: 80
   },
   {
     title: '课程名',
     search: false,
     dataIndex: 'courseName',
-    align: 'center',
-    width: 120,
-    render: (txt) => <span className="table-txt">{txt}</span>,
+    // align: 'center',
+    width: 150,
+    render: (txt) => <CustomText>{txt}</CustomText>,
     onCell,
   },
   {
     title: '课堂',
     dataIndex: 'courseClassName',
     search: false,
-    align: 'center',
-    width: 120,
-    render: (txt) => <span className="table-txt">{txt}</span>,
+    // align: 'center',
+    width: 200,
+    render: (txt) =>  <CustomText>{txt}</CustomText>,
     onCell,
   },
 
