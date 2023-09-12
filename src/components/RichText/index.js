@@ -157,7 +157,7 @@ const Editor = (props) => {
         theme="snow"
         placeholder="请输入"
         modules={modules}
-        style={{ height: 600 }}
+        style={{ height: props.height }}
         {...props}
       />
     </>

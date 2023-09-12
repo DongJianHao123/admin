@@ -4,11 +4,11 @@ import { Form, message, Modal } from 'antd';
 import Card from 'antd/lib/card/Card';
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import { getCourseList } from '@/services/classHourStatistics';
-import { getSignature, postSms } from '@/services/common';
 import { fetchMemberList } from '@/services/course';
 import './index.less'
 
 import { SMS_PARAMS, SMS_template } from '@/common/constants';
+import { getSignature, postSms } from '@/services/operate/api';
 const { confirm } = Modal;
 
 const ALL_STUDENTS_SIZE = 3000;

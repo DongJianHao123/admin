@@ -276,7 +276,7 @@ const CourseEdit = () => {
               },
             ]}
           >
-            <Editor />
+            <Editor height={600} />
           </Form.Item>
         </Col>
         <Form.Item name="courseId" noStyle />

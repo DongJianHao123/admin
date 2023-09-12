@@ -14,7 +14,7 @@ import '../style/Dashboard/dashboard.less';
 import U from '@/common/U';
 
 const packChartData = (rawData: any) => {
-  const list = (rawData?.daySummaryList || []).reverse();
+  const list:Array<any> = (rawData?.daySummaryList || []).toReversed();
   return {
     title: {
       text: `近15天消费时长: ${U.date.remainingHour(rawData?.totalTimeLong)}`,

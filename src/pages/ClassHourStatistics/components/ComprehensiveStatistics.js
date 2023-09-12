@@ -108,7 +108,7 @@ const packColumns = (dateRec) =>
     },
     {
       title: '序号',
-      dataIndex: 'userId',
+      dataIndex: 'index',
       align: 'center',
       width: 60,
       renderText: (_, row, index) => index + 1,
