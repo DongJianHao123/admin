@@ -12,22 +12,14 @@ export async function sendEmails(body: Api.EmailParams) {
     data: body,
   });
 }
+// const BASE_URL = 'http://localhost:4000';
 const BASE_URL = 'http://101.200.208.215:4000';
 
-export async function sendEmailGroup(data: Api.GroupEmailParams) {
-  axios(BASE_URL + `/api/v1/email/send_email_group`, {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: JSON.stringify(data),
-    onDownloadProgress: data.onDownloadProgress,
-  }).then((_res) => {
-    console.log('请求结果', _res);
-  });
+export async function sendEmailGroup(data: Api.GroupEmailParams, onDownloadProgress: (progressEvent: any) => void) {
+  return axios.post(BASE_URL + `/api/v1/email/send_email_group`, data, { onDownloadProgress })
 }
 
-export async function postSms(smsInfo:any) {
+export async function postSms(smsInfo: any) {
   let res = await axios(BASE_URL + `/api/v1/msms/inform`, {
     method: 'post',
     headers: {
@@ -39,10 +31,8 @@ export async function postSms(smsInfo:any) {
   return res.data;
 }
 
-export async function getSignature(clientId:string) {
-  let res = await axios.get(
-    BASE_URL + `/api/v1/msms/get_signature/?clientId=${clientId}`,
-  );
+export async function getSignature(clientId: string) {
+  let res = await axios.get(BASE_URL + `/api/v1/msms/get_signature/?clientId=${clientId}`);
   if (res.data.errcode === 200) {
     return res.data.data;
   } else {

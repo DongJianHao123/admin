@@ -16,7 +16,7 @@ const Operate = () => {
         {
           tab: '邮件通知',
           key: 'email',
-          children: <OperateEmail></OperateEmail>,
+          children: <OperateEmail />,
         },
         // {
         //   tab: '统计信息',

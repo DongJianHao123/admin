@@ -17,19 +17,31 @@ jobs:
         uses: actions/setup-node@v3.0.0
         with:
           node-version: '16.17.0'
+
       - name: install pkg
         run: |
           npm install yarn -g
-          yarn install
-      - name: create env file
-        run: |
-          echo VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }} >> .env
+          yarn
+
       - name: build pages
         run: yarn build
-      - name: GitHub Pages
-        uses: crazy-max/ghaction-github-pages@v3.0.0
-        with:
-          target_branch: gh-pages
-          build_dir: dist
+
+      - name: ssh deploy guigu
+        uses: cross-the-world/ssh-scp-ssh-pipelines@latest
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WELCOME: "ssh scp ssh pipelines"
+          LASTSSH: "Doing something after copying"
+        with:
+          host: ${{ secrets.SERVER_IP }} # 服务器的ip
+          user: ${{ secrets.SERVER_NAME }} # 服务器的账号
+          pass: ${{ secrets.SERVER_PWD }} # 服务器的密码
+          connect_timeout: 10s
+          first_ssh: | #这部分是在服务器上，传输文件前执行的命令，关闭并删除运行中的旧版本
+            cd /root/admin
+            rm -rf dist-old
+            mv dist dist-old
+          scp: | #将build生成的文件从GitHub服务器的相应目录，传到我服务器的相应目录
+            ./dist => /root/admin
+          last_ssh: | #这部分是在服务器上，传输文件后执行的命令，新版本重新安装依赖并运行
+            pm2 restart r2edu-admin
+            exit

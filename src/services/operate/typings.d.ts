@@ -10,6 +10,5 @@ declare namespace Api {
     title: string;
     content: string;
     type: 'html' | 'text';
-    onDownloadProgress?: (progressEvent: any) => void
   };
 }

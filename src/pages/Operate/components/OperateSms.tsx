@@ -7,8 +7,9 @@ import { getCourseList } from '@/services/classHourStatistics';
 import { fetchMemberList } from '@/services/course';
 import './index.less'
 
-import { SMS_PARAMS, SMS_template } from '@/common/constants';
+import { PhoneRegex, SMS_PARAMS, SMS_template } from '@/common/constants';
 import { getSignature, postSms } from '@/services/operate/api';
+import { Excel2Data } from '@/components';
 const { confirm } = Modal;
 
 const ALL_STUDENTS_SIZE = 3000;
@@ -47,7 +48,8 @@ const OperateSms = () => {
     setCheckAll(false);
     setIndeterminate(false);
     form.setFieldValue("phones", [])
-    setSmsData({ ...smsData, phones: [] })
+    form.setFieldValue("inputPhones", [])
+    setSmsData({ ...smsData, phones: [], inputPhones: [] })
   }
 
   const changeData = (field: string, value: any) => {
@@ -55,7 +57,6 @@ const OperateSms = () => {
     setSmsData({ ...smsData })
     if (field === "template") {
       setTemplate(SMS_template.find((item) => item.value === value))
-      console.log(template);
     }
   }
 
@@ -113,14 +114,27 @@ const OperateSms = () => {
     }
   }
 
+
   const onSubmit = async (values: any) => {
-    confirm({
-      title: '您确定要发送信息吗？',
-      onOk() {
-        sendSms(values);
-        clearPhones()
-      },
-    })
+    const { phones, inputPhones = '' } = values
+    let _inputPhones: string[] = [];
+
+    if (!!inputPhones && typeof inputPhones === 'string') {
+      _inputPhones = inputPhones.split(';')
+    }
+
+    let _phones = [...phones, ..._inputPhones].filter(phone => PhoneRegex.test(phone))
+    if (!_phones || _phones.length < 1) {
+      message.warn('请选择联系人或者添加手机号')
+    } else {
+      confirm({
+        title: '您确定要发送信息吗？',
+        onOk() {
+          sendSms({ ...values, phones: _phones });
+          clearPhones()
+        },
+      })
+    }
   };
 
   useEffect(() => {
@@ -141,8 +155,6 @@ const OperateSms = () => {
     </div>
     <ProForm<{
       phones: string[];
-      company?: string;
-      useMode?: string;
     }>
       className="form"
       form={form}
@@ -190,9 +202,6 @@ const OperateSms = () => {
           maxTagCount: 10,
           loading: studentsLoading
         }}
-        rules={[
-          { required: true, message: '请选择至少一名学生', type: 'array' },
-        ]}
         width="lg"
         name="phones"
         label="联系人"
@@ -202,6 +211,14 @@ const OperateSms = () => {
           <Checkbox onChange={onCheck} indeterminate={indeterminate} checked={checkAll}>全选</Checkbox>
           <span>{`${smsData.phones?.length || 0}/${students.size}`}</span>
         </>}
+
+      />
+      <ProFormTextArea
+        width="lg"
+        name="inputPhones"
+        label="添加手机号"
+        placeholder={'手动输入手机号,用英文逗号隔开'}
+        addonAfter={<Excel2Data regex={PhoneRegex} onChange={(e) => form.setFieldValue('inputPhones', e.join(';'))} />}
       />
 
       <ProForm.Group>

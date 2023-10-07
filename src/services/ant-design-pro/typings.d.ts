@@ -110,3 +110,5 @@ declare namespace API {
     type?: NoticeIconItemType;
   };
 }
+
+type OnCell = ({ dataLength }: { dataLength: number }, index: number) => any
