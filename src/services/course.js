@@ -93,6 +93,7 @@ export async function createCourse(data) {
       clientId: '385',
       client: {},
       isDelete: 1,
+      createdAt: new Date(),
       ...data,
     },
   });
@@ -101,7 +102,10 @@ export async function createCourse(data) {
 export async function updateCourse(data) {
   return request('/seller/api/courses/update', {
     method: 'post',
-    data,
+    data: {
+      ...data,
+      updatedAt: new Date(),
+    },
   });
 }
 
@@ -122,8 +126,8 @@ export async function fetchClassroomInfo(id) {
   const res = await request(`/seller/api/course-classes/${id}`);
   return {
     ...res,
-    coverUrl: [{ url: res.coverUrl }]
-  }
+    coverUrl: [{ url: res.coverUrl }],
+  };
 }
 
 export async function createClassroom(data) {

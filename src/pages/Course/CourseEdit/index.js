@@ -18,6 +18,7 @@ import {
   ProFormGroup,
   ProFormSelect,
   ProFormText,
+  ProFormTextArea,
   ProFormUploadButton,
 } from '@ant-design/pro-components';
 import { useRequest, useParams } from '@umijs/max';
@@ -236,6 +237,10 @@ const CourseEdit = () => {
           labelCol={{ span: 6 }}
           colProps={{ md: 12, xl: 16 }}
           placeholder="请输入"
+        /> */}
+        {/* <ProFormTextArea
+        name='info'
+        label='广告位'
         /> */}
         <ProFormUploadButton
           name="coverUrl"

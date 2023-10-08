@@ -138,7 +138,6 @@ const Course = () => {
           U.obj.RemoveNulls(_params);
           return await fetchCourseList(_params);
         }}
-        scroll={{ y: 458 }}
         toolBarRender={() => (
           <Button
             onClick={() => history.push('/course/edit/0')}
