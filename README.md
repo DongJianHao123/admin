@@ -7,13 +7,16 @@
 1. yarn
 2. yarn start
 
-## 关于clientId
-`clientId 没有什么标准，但是为了能够灵活更改，在 src/requestErrorConfig.ts 做了统一配置，如果检测到 query string 或者 post 方法的 data 中有 clientId 相关参数将进行统一替换。`
+## build
 
-### clientId 配置
-config/config.ts
-```js
-  define: {
-    'process.env.clientId': 385,
-  },
 ```
+yarn build
+```
+
+## 运行打包文件
+
+建议使用 `yarn serve` 启动，内置 gzip 压缩，访问时可减小包的体积，加快访问速度。
+
+## deploy
+
+使用 github 工作流，当代码提交到 main 分支上时，会自动构建打包，然后将打包后的文件发送的服务器，重启部署的服务，详情见 `.github/workflows/deploy.yml`文件

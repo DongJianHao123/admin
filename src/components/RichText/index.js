@@ -1,33 +1,49 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { message } from 'antd';
 import { fileUpload } from '@/utils';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill, { Quill } from 'react-quill';
 import imageResize from 'quill-image-resize-module-zzone';
+import { base64ToFile, isHTML } from './useCopyImg';
 
 Quill.register('modules/imageResize', imageResize);
+
+const base64ImgRegx = /<img [^>]*src=['"]data:image([^'"]+)[^>]*>/;
 
 const Editor = (props) => {
   let quillRef = useRef(null);
 
   // 自定义上传图片到七牛云
-  const imageHandler = async () => {
+  const handleClickUploadImg = async () => {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
     input.click();
-    input.onchange = () => {
+    input.onchange = async () => {
       const file = input.files[0];
-      const hide = message.loading('上传中...', 0);
-      fileUpload(file).then((res) => {
-        const url = `https://ssl.cdn.maodouketang.com/${res.key}`;
-        let quill = quillRef?.current?.getEditor(); //获取到编辑器本身
-        const cursorPosition = quill.getSelection().index; //获取当前光标位置
-        quill.insertEmbed(cursorPosition, 'image', url); //插入图片
-        quill.setSelection(cursorPosition + 1); //光标位置加1
-        hide();
-      });
+      imageReplace(file);
     };
+  };
+
+  const imageUpload = async (file) => {
+    const hide = message.loading('图片上传中...', 0);
+    try {
+      const res = await fileUpload(file);
+      hide();
+      const url = `https://ssl.cdn.maodouketang.com/${res.key}`;
+      return url;
+    } catch (err) {
+      hide();
+      message.error('图片上传失败，请重试');
+    }
+  };
+
+  const imageReplace = async (file) => {
+    const url = await imageUpload(file);
+    let quill = quillRef?.current?.getEditor(); //获取到编辑器本身
+    const cursorPosition = quill.getSelection().index; //获取当前光标位置
+    quill.insertEmbed(cursorPosition, 'image', url); //插入图片
+    quill.setSelection(cursorPosition + 1); //光标位置加1
   };
 
   const modules = useMemo(
@@ -130,7 +146,7 @@ const Editor = (props) => {
           ['clean'],
         ],
         handlers: {
-          image: imageHandler,
+          image: handleClickUploadImg,
         },
         history: {
           delay: 500,
@@ -149,6 +165,66 @@ const Editor = (props) => {
     }),
     [],
   );
+
+  const handlePaste = async (event) => {
+    event.preventDefault();
+    const clipboardData = event.clipboardData || window.clipboardData;
+    if (clipboardData) {
+      const items = clipboardData.items;
+
+      if (items) {
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          // 检查是否是文本类型
+          if (item.type.indexOf('text') !== -1) {
+            item.getAsString(async (text) => {
+              let _text = await uploadImgInPasteText(text);
+              setTimeout(() => {
+                let quill = quillRef?.current?.getEditor(); //获取到编辑器本身
+                const cursorPosition = quill.getSelection().index; //获取当前光标位置
+                console.log(quill);
+                quill.clipboard.dangerouslyPasteHTML(cursorPosition, _text);
+              }, 0);
+            });
+          }
+
+          // 如果还需要处理其他类型，比如图片，可以类似地添加逻辑
+          else if (item.type.indexOf('image') !== -1) {
+            const file = item.getAsFile();
+            await imageReplace(file);
+          }
+        }
+      }
+    }
+  };
+
+  const uploadImgInPasteText = async (text) => {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, 'text/html');
+      const imgElements = doc.getElementsByTagName('img');
+
+      for (let i = 0; i < imgElements.length; i++) {
+        const imgElement = imgElements[i];
+
+        // 检查图片是否为 base64
+        if (imgElement.src.startsWith('data:image')) {
+          const base64Data = imgElement.src.split(',')[1];
+          const imgFile = base64ToFile(base64Data);
+          const uploadedURL = await imageUpload(imgFile);
+          imgElement.src = uploadedURL;
+        }
+      }
+      return doc.documentElement.outerHTML;
+    } catch (error) {
+      console.log('uploadImgInPasteText出错了', error);
+      return text;
+    }
+  };
+
+  useEffect(() => {
+    quillRef.current.editor.container.addEventListener('paste', handlePaste);
+  }, []);
 
   return (
     <>
