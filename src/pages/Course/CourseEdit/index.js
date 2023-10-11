@@ -242,6 +242,12 @@ const CourseEdit = () => {
         name='info'
         label='广告位'
         /> */}
+        <ProFormText
+          name="showqr"
+          label="开放上课、回放权限"
+          required
+          placeholder={'1为开放,0为关闭'}
+        />
         <ProFormUploadButton
           name="coverUrl"
           label="课程图片"
