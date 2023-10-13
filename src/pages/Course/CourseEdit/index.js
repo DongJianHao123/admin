@@ -227,8 +227,8 @@ const CourseEdit = () => {
         <ProFormText
           name="teacher"
           label="任课教师"
-          labelCol={{ span: 6 }}
-          colProps={{ md: 12, xl: 16 }}
+          labelCol={{ span: 12 }}
+          colProps={{ md: 12, xl: 8 }}
           placeholder="请输入"
         />
         {/* <ProFormText
@@ -242,11 +242,32 @@ const CourseEdit = () => {
         name='info'
         label='广告位'
         /> */}
-        <ProFormText
+        <ProFormSelect
           name="showqr"
           label="开放上课、回放权限"
           required
-          placeholder={'1为开放,0为关闭'}
+          labelCol={{ span: 12 }}
+          colProps={{ md: 12, xl: 8 }}
+          placeholder="请选择"
+          rules={requiredRule}
+          request={async () => [
+            {
+              value: 0,
+              label: '无权限',
+            },
+            {
+              value: 1,
+              label: '只能进入教室',
+            },
+            {
+              value: 2,
+              label: '只能观看回放',
+            },
+            {
+              value: 3,
+              label: '所有权限',
+            },
+          ]}
         />
         <ProFormUploadButton
           name="coverUrl"
