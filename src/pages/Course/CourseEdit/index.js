@@ -244,7 +244,7 @@ const CourseEdit = () => {
         /> */}
         <ProFormSelect
           name="showqr"
-          label="开放上课、回放权限"
+          label="报名课程权限"
           required
           labelCol={{ span: 12 }}
           colProps={{ md: 12, xl: 8 }}
