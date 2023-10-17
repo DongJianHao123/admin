@@ -119,6 +119,7 @@ const packColumns = (dateRec) =>
       dataIndex: 'name',
       align: 'center',
       width: 80,
+      renderText: (name, row, index) =>row.role === 'teacher' ?<span style={{color:'green'}}>{name + "(老师)" }</span> : name,
       onCell: ({ dataLength }, index) => {
         if (dataLength - 1 === index) {
           return {

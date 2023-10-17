@@ -4,7 +4,7 @@ import { Utils } from "@/common/Utils";
 import { actions } from "@/services/actions";
 import { getCourseList } from "@/services/classHourStatistics";
 import { PageContainer, ProTable } from "@ant-design/pro-components";
-import { Popover } from "antd";
+import { Popover, Tag } from "antd";
 import { isEmpty } from "lodash";
 import moment from "moment";
 import './index.less'
@@ -63,9 +63,9 @@ const columns = [
     align: "center",
     fieldProps: {
       options: [
-        { label: '老师', value: 'teacher' },
-        { label: '学生', value: 'student' },
-        { label: '助教', value: 'ta' },
+        { label: <Tag color="green">老师</Tag>, value: 'teacher', },
+        { label: <Tag color="cyan">学生</Tag>, value: 'student' },
+        { label: <Tag color="geekblue">助教</Tag>, value: 'ta' },
       ],
     },
   },
