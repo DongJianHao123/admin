@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { message } from 'antd';
-import uuid from 'uuid/v4';
 import { fileUpload } from '@/utils';
 
 // base64 转换 blob

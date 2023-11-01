@@ -93,7 +93,6 @@ export async function createCourse(data) {
       clientId: '385',
       client: {},
       isDelete: 1,
-      createdAt: new Date(),
       ...data,
     },
   });

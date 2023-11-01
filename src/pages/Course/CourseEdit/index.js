@@ -79,6 +79,7 @@ const CourseEdit = () => {
     const data = {
       ...values,
       coverUrl: file.url,
+      courseIndex: values.courseIndex.toString()
     };
     return (isAdd ? createCourse(data) : updateCourse(data)).then(() => {
       message.success(`${isAdd ? '添加' : '修改'}成功`);
@@ -231,17 +232,17 @@ const CourseEdit = () => {
           colProps={{ md: 12, xl: 8 }}
           placeholder="请输入"
         />
-        {/* <ProFormText
+        <ProFormText
           name="gradeLevel"
           label="等级"
           labelCol={{ span: 6 }}
           colProps={{ md: 12, xl: 16 }}
           placeholder="请输入"
-        /> */}
-        {/* <ProFormTextArea
-        name='info'
-        label='广告位'
-        /> */}
+        />
+        <ProFormTextArea
+          name='info'
+          label='广告位'
+        />
         <ProFormSelect
           name="showqr"
           label="报名课程权限"

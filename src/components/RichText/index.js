@@ -4,11 +4,17 @@ import { fileUpload } from '@/utils';
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill, { Quill } from 'react-quill';
 import imageResize from 'quill-image-resize-module-zzone';
-import { base64ToFile, isHTML } from './useCopyImg';
+import { base64ToFile, isHTML } from './util';
 
 Quill.register('modules/imageResize', imageResize);
 
 const base64ImgRegx = /<img [^>]*src=['"]data:image([^'"]+)[^>]*>/;
+
+const pasteTypes = {
+  HTML: 'text/html',
+  TEXT: 'text/plain',
+  IMAGE: 'image'
+}
 
 const Editor = (props) => {
   let quillRef = useRef(null);
@@ -171,12 +177,21 @@ const Editor = (props) => {
     const clipboardData = event.clipboardData || window.clipboardData;
     if (clipboardData) {
       const items = clipboardData.items;
+      console.log('items=>', items);
 
       if (items) {
+        const _items = Array.from(items)
+        let canPasteWay = '';
+        let haveText = _items.findIndex((item) => item.type === pasteTypes.TEXT) !== -1
+        let haveHtml = _items.findIndex((item) => item.type === pasteTypes.HTML) !== -1
+        let haveImage = _items.findIndex((item) => item.type.indexOf(pasteTypes.IMAGE) !== -1) !== -1
+        if (haveText && !haveHtml) canPasteWay = pasteTypes.TEXT
+        if (haveImage && !haveHtml) canPasteWay = pasteTypes.IMAGE
+        if (haveHtml) canPasteWay = pasteTypes.HTML
+
         for (let i = 0; i < items.length; i++) {
           const item = items[i];
-          // 检查是否是文本类型
-          if (item.type.indexOf('text') !== -1) {
+          if (canPasteWay !== 'image' && item.type === canPasteWay) {
             item.getAsString(async (text) => {
               let _text = await uploadImgInPasteText(text);
               setTimeout(() => {
@@ -187,9 +202,8 @@ const Editor = (props) => {
               }, 0);
             });
           }
-
           // 如果还需要处理其他类型，比如图片，可以类似地添加逻辑
-          else if (item.type.indexOf('image') !== -1) {
+          else if (item.type.indexOf(canPasteWay) !== -1) {
             const file = item.getAsFile();
             await imageReplace(file);
           }
