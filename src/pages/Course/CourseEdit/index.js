@@ -226,8 +226,8 @@ const CourseEdit = () => {
             name="showqr"
             label="报名权限"
             required
-            labelCol={{ span: 4 }}
-            colProps={{ md: 24, xl: 6 }}
+            labelCol={{ span: 7 }}
+            colProps={{ md: 24, xl: 5 }}
             placeholder="请选择"
             rules={requiredRule}
             request={async () => [
