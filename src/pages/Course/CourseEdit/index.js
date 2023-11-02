@@ -197,6 +197,64 @@ const CourseEdit = () => {
           />
         </ProFormGroup>
         <ProFormGroup>
+          <ProFormText
+            name="teacher"
+            label="任课教师"
+            labelCol={{ span: 16 }}
+            colProps={{ md: 24, xl: 6 }}
+            placeholder="请输入"
+          />
+          <ProFormSelect
+            name="gradeLevel"
+            label="页面样式"
+            labelCol={{ span: 8 }}
+            colProps={{ md: 24, xl: 6 }}
+            placeholder="请选择"
+            required
+            request={async () => [
+              {
+                value: 1,
+                label: '新课程页',
+              },
+              {
+                value: 0,
+                label: '普通课程页',
+              },
+            ]}
+          />
+          <ProFormSelect
+            name="showqr"
+            label="报名权限"
+            required
+            labelCol={{ span: 4 }}
+            colProps={{ md: 24, xl: 6 }}
+            placeholder="请选择"
+            rules={requiredRule}
+            request={async () => [
+              {
+                value: 0,
+                label: '无权限',
+              },
+              {
+                value: 1,
+                label: '只能进入教室',
+              },
+              {
+                value: 2,
+                label: '只能观看回放',
+              },
+              {
+                value: 3,
+                label: '所有权限',
+              },
+            ]}
+          />
+        </ProFormGroup>
+        {/* <ProFormTextArea
+          name='info'
+          label='广告位'
+        /> */}
+        <ProFormGroup>
           <ProFormDigit
             name="courseIndex"
             label="排序"
@@ -225,51 +283,6 @@ const CourseEdit = () => {
             rules={requiredRule}
           />
         </ProFormGroup>
-        <ProFormText
-          name="teacher"
-          label="任课教师"
-          labelCol={{ span: 12 }}
-          colProps={{ md: 12, xl: 8 }}
-          placeholder="请输入"
-        />
-        <ProFormText
-          name="gradeLevel"
-          label="等级"
-          labelCol={{ span: 6 }}
-          colProps={{ md: 12, xl: 16 }}
-          placeholder="请输入"
-        />
-        <ProFormTextArea
-          name='info'
-          label='广告位'
-        />
-        <ProFormSelect
-          name="showqr"
-          label="报名课程权限"
-          required
-          labelCol={{ span: 12 }}
-          colProps={{ md: 12, xl: 8 }}
-          placeholder="请选择"
-          rules={requiredRule}
-          request={async () => [
-            {
-              value: 0,
-              label: '无权限',
-            },
-            {
-              value: 1,
-              label: '只能进入教室',
-            },
-            {
-              value: 2,
-              label: '只能观看回放',
-            },
-            {
-              value: 3,
-              label: '所有权限',
-            },
-          ]}
-        />
         <ProFormUploadButton
           name="coverUrl"
           label="课程图片"

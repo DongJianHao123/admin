@@ -1,12 +1,11 @@
 import { useRef, useMemo, useEffect } from 'react';
 import { message } from 'antd';
 import { fileUpload } from '@/utils';
-import 'react-quill/dist/quill.snow.css';
 import ReactQuill, { Quill } from 'react-quill';
-import imageResize from 'quill-image-resize-module-zzone';
+import ImageResize from 'quill-image-resize-module-zzone';
 import { base64ToFile, isHTML } from './util';
 
-Quill.register('modules/imageResize', imageResize);
+Quill.register('modules/imageResize', ImageResize);
 
 const base64ImgRegx = /<img [^>]*src=['"]data:image([^'"]+)[^>]*>/;
 
@@ -166,7 +165,7 @@ const Editor = (props) => {
           border: 'none',
           color: 'white',
         },
-        modules: ['Resize', 'DisplaySize'],
+        modules: ['Resize'],
       },
     }),
     [],
@@ -236,8 +235,31 @@ const Editor = (props) => {
     }
   };
 
+  const observer = new MutationObserver(mutationsList => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'width') {
+        const imgElement = mutation.target
+        //需要先删除清空style，因为style中宽度的存在，无法在用属性width修改大小
+        imgElement.style = null
+        let parentWidth = imgElement.parentNode.offsetWidth;
+        let widthInPercentage = 100 / parentWidth * imgElement.width;
+        imgElement.style.width = `${widthInPercentage.toFixed(2)}%`;
+      }
+    }
+  });
+  // 配置 MutationObserver 监听属性和子节点的变化
+  const config = { attributes: true, childList: false, subtree: false };
+
   useEffect(() => {
+    console.log(quillRef);
     quillRef.current.editor.container.addEventListener('paste', handlePaste);
+    quillRef.current.editor.root.addEventListener('DOMSubtreeModified', function (e) {
+      if (e.target.tagName === 'IMG') {
+        // 开始观察目标节点
+        let imgElement = e.target;
+        observer.observe(imgElement, config);
+      }
+    }, true);
   }, []);
 
   return (
