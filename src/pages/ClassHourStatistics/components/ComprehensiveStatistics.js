@@ -2,6 +2,7 @@ import {
   fetchCourseDateRec,
   getCourseList,
   fetchCourseStatisticData,
+  getAllCourseList,
 } from '@/services/classHourStatistics';
 import { fetchClassroomList } from '@/services/course';
 import { secondsParse } from '@/utils';
@@ -47,7 +48,7 @@ const packColumns = (dateRec) =>
       hideInTable: true,
       search: true,
       valueType: 'select',
-      request: getCourseList,
+      request: getAllCourseList,
     },
     {
       title: '学生数',

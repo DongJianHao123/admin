@@ -1,6 +1,7 @@
 import { ProTable } from '@ant-design/pro-components';
 import {
   fetchStudentsLiveStatic,
+  getAllCourseList,
   getCourseList,
 } from '@/services/classHourStatistics';
 import { secondsParse } from '@/utils';
@@ -91,7 +92,7 @@ const columns = [
     valueType: 'select',
     width: 180,
     align: 'center',
-    request: getCourseList,
+    request: getAllCourseList,
   },
   {
     title: '开始时间',

@@ -3,7 +3,7 @@ import { Action_type } from '@/common/constants';
 import { data2Excel } from '@/common/data2Excel';
 import CustomText from '@/components/CustomText';
 import { actions, playbackActions } from '@/services/actions';
-import { getCourseList } from '@/services/classHourStatistics';
+import { getAllCourseList, getCourseList } from '@/services/classHourStatistics';
 import { secondsParse } from '@/utils';
 import { ExportOutlined } from '@ant-design/icons';
 import { ProTable } from '@ant-design/pro-components';
@@ -24,7 +24,7 @@ const columns = [
     hideInTable: true,
     search: true,
     valueType: 'select',
-    request: getCourseList,
+    request: getAllCourseList,
   },
   {
     title: '时间',
