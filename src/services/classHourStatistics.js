@@ -20,6 +20,22 @@ export async function getCourseList() {
   );
 }
 
+export async function getAllCourseList() {
+  return fetchCourseList({size:200}).then(({ data }) => {
+    console.log(data);
+    return data
+      .map((item) => ({
+        label: item.title || " ",
+        value: item.roomId || " ",
+      }))
+      .filter(
+        (item, index, self) =>
+          self.findIndex((i) => i.value === item.value) === index,
+      )
+  }
+  );
+}
+
 export async function fetchCourseDateRec(params) {
   const _startTime = typeof params.startTime === "string" ? params.startTime : params.startTime.$d
   const _endTime = typeof params.endTime === "string" ? params.endTime : params.endTime.$d
