@@ -5,7 +5,7 @@ import { fetchCourseList } from './course';
 import U from '@/common/U';
 
 export async function getCourseList() {
-  return fetchCourseList().then(({ data }) => {
+  return fetchCourseList({size:200}).then(({ data }) => {
     console.log(data);
     return data
       .map((item) => ({
