@@ -255,6 +255,14 @@ const OperateSms = () => {
               label="角色"
               rules={[{ required: true, message: '请输入角色' }]}
             />
+          }else if (param === SMS_PARAMS.CONTENT) {
+            return <ProFormText
+              key={index}
+              width="lg"
+              name="content"
+              label="内容"
+              rules={[{ required: true, message: '请输入内容' }]}
+            />
           } else if (param === SMS_PARAMS.NOTE) {
             return <ProFormTextArea
               key={index}

@@ -32,6 +32,7 @@ export const SMS_PARAMS = {
   NAME: "call",
   TITLE: "title",
   DATE: "date",
+  CONTENT: "content",
   ROLE: "role",
   NOTE: "note"
 }
@@ -59,6 +60,16 @@ export const SMS_template = [
     label: "课程报名",
     params: [SMS_PARAMS.TITLE, SMS_PARAMS.NAME, SMS_PARAMS.DATE, SMS_PARAMS.NOTE],
     getContent: ([signature = "", title = "", call = "", date = "", note = ""]) => `【${signature}】您好，《${title}》即将开讲，由 ${call} 亲临授课，报名时间截止到${date}， 不要错过哦! 备注： ${note} 。 回T退订`,
+  }, {
+    value: 1981363,
+    label: "开班通知",
+    params: [SMS_PARAMS.NAME, SMS_PARAMS.TITLE, SMS_PARAMS.CONTENT, SMS_PARAMS.NOTE],
+    getContent: ([signature = "", call = "", title = "", content = "", note = ""]) => `【${signature}】${call},${title}即将开始，${content} 。备注：${note} 。拒收请回复R`,
+  }, {
+    value: 1981205,
+    label: "上课前通知",
+    params: [SMS_PARAMS.NAME, SMS_PARAMS.TITLE, SMS_PARAMS.NOTE],
+    getContent: ([signature = "", call = "", title = "", note = ""]) => `【${signature}】${call}，您报名的课程 ${title} ，请准时参加。备注：${note} 。`,
   },
 ]
 
@@ -130,6 +141,6 @@ export const tags = [
   },
 ];
 
-export const PhoneRegex=/^(\+86|86)?1[3-9]\d{9}$|^(\+886|0)9\d{8}$/;
+export const PhoneRegex = /^(\+86|86)?1[3-9]\d{9}$|^(\+886|0)9\d{8}$/;
 
 export const EmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
