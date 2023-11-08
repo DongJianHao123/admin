@@ -14,8 +14,8 @@ import {
 } from '@/services/course';
 import { ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { useParams } from '@umijs/max';
-import { Button, message, Popconfirm, Switch } from 'antd';
+import { useParams, useSearchParams } from '@umijs/max';
+import { Button, Form, message, Popconfirm, Switch } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import MemberManageForm from '../components/MemberManageForm';
 import { data2Excel } from '@/common/data2Excel';
@@ -45,7 +45,7 @@ const columns = (setDrawProps, tableRef) =>
       dataIndex: 'createdAt',
       align: 'center',
       search: false,
-      width:180,
+      width: 180,
       render: (time) =>
         time === '-'
           ? '暂无'
@@ -56,7 +56,7 @@ const columns = (setDrawProps, tableRef) =>
       dataIndex: 'gender',
       align: 'center',
       valueType: 'select',
-      width:80,
+      width: 80,
       fieldProps: {
         options: [
           {
@@ -78,7 +78,7 @@ const columns = (setDrawProps, tableRef) =>
       title: '角色',
       dataIndex: 'status',
       valueType: 'select',
-      align:'center',
+      align: 'center',
       fieldProps: {
         options: roles,
       },
@@ -86,7 +86,7 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '进入课堂',
       dataIndex: 'verify',
-      align:'center',
+      align: 'center',
       render: (val, row) => (
         <Switch
           checkedChildren="允许"
@@ -109,7 +109,7 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '观看回放',
       dataIndex: 'verify',
-      align:'center',
+      align: 'center',
       render: (val, row) => (
         <Switch
           checkedChildren="允许"
@@ -178,11 +178,13 @@ const columns = (setDrawProps, tableRef) =>
 const MemberManage = () => {
   const { courseId } = useParams();
   const tableRef = useRef();
+  const formRef = useRef()
   const [drawerProps, setDrawProps] = useState({ visible: false });
   const [course, setCourse] = useState();
   const [total, setTotal] = useState(0);
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchParam, setSearchParam] = useSearchParams()
 
   const loadCourse = () => {
     fetchCourseList({ courseId }).then((res) => {
@@ -225,8 +227,12 @@ const MemberManage = () => {
     );
     setLoading(false);
   };
-
-  useEffect(loadCourse, []);
+  const phoneField = 'phone'
+  let defaultPhone = searchParam.get(phoneField)
+  useEffect(() => {
+    defaultPhone && formRef.current.setFieldValue(phoneField, defaultPhone)
+    loadCourse()
+  }, []);
   // TODO try fix
   useEffect(async () => {
     if (total > 0) {
@@ -247,10 +253,17 @@ const MemberManage = () => {
       <ProTable
         headerTitle={course && course.title}
         actionRef={tableRef}
+        formRef={formRef}
         rowKey="id"
         columns={columns(setDrawProps, tableRef)}
         request={async (params) => {
-          const result = await fetchMemberList({ ...params, courseId });
+          let _params = { ...params, courseId, phone: defaultPhone ?? params.phone }
+          console.log('==>', _params);
+          if (defaultPhone) {
+            searchParam.delete(phoneField)
+            setSearchParam(searchParam)
+          }
+          const result = await fetchMemberList(_params);
           setTotal(result.total);
           return result;
         }}

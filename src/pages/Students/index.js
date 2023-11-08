@@ -94,6 +94,7 @@ const columns = (registInfos = [], courses = []) =>
                         pathname: `/course/member-manage/${courseId}`,
                         search: {
                           uniCourseId: uniCourseId,
+                          phone:phone
                         },
                       });
                     }}

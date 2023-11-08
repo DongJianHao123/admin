@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import {useEffect, useRef, useState } from 'react';
 import { Button, Popconfirm } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
@@ -6,6 +6,7 @@ import { fetchCourseList, updateCourse } from '@/services/course';
 
 import { history } from '@/utils';
 import U from '@/common/U';
+import { useSearchParams } from '@umijs/max';
 
 const columns = (tableRef) =>
   [
@@ -63,7 +64,7 @@ const columns = (tableRef) =>
               history.push({
                 pathname: `/course/member-manage/${row.courseId}`,
                 search: {
-                  uniCourseId: row.id,
+                  uniCourseId: row.id
                 },
               })
             }
@@ -87,7 +88,9 @@ const columns = (tableRef) =>
             课堂管理
           </Button>
           <Button
-            onClick={() => history.push(`/course/edit/${row.id}`)}
+            onClick={() => history.push({
+              pathname: `/course/edit/${row.id}`
+            })}
             size="small"
             type="link"
           >
@@ -112,6 +115,7 @@ const columns = (tableRef) =>
 
 const Course = () => {
   const tableRef = useRef();
+  const [searchParam, setSearchParam] = useSearchParams()
 
   const filterParams = (params, fields = []) => {
     let _params = {};
@@ -120,22 +124,27 @@ const Course = () => {
     });
     return _params;
   };
-
+  useEffect(() => {
+    const page_num = searchParam.get('page_num');
+    tableRef.current.setPageInfo({ ...tableRef.current.pageInfo, current: page_num })
+    // page_num
+  }, [])
   return (
     <PageContainer>
       <ProTable
         actionRef={tableRef}
-        pagination={null}
+        // pagination={null}
         rowKey="id"
         columns={columns(tableRef)}
         request={async (params) => {
-          const _params = filterParams(params, [
+          let _params = filterParams(params, [
             'title',
             'courseId',
             'current',
             'pageSize',
           ]);
-          U.obj.RemoveNulls(_params);
+          _params = U.obj.RemoveNulls(_params);
+          setSearchParam({ page_num: _params['current'] })
           return await fetchCourseList(_params);
         }}
         toolBarRender={() => (

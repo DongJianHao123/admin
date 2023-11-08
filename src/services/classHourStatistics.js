@@ -5,23 +5,7 @@ import { fetchCourseList } from './course';
 import U from '@/common/U';
 
 export async function getCourseList() {
-  return fetchCourseList({size:200}).then(({ data }) => {
-    console.log(data);
-    return data
-      .map((item) => ({
-        label: item.title || " ",
-        value: item.roomId || " ",
-      }))
-      .filter(
-        (item, index, self) =>
-          self.findIndex((i) => i.value === item.value) === index,
-      )
-  }
-  );
-}
-
-export async function getAllCourseList() {
-  return fetchCourseList({size:200}).then(({ data }) => {
+  return fetchCourseList({ size: 200 }).then(({ data }) => {
     console.log(data);
     return data
       .map((item) => ({
@@ -59,7 +43,7 @@ export async function fetchStudentsLiveStatic(params) {
       clientId: 385,
       ...params,
       sort: "startTime,desc",
-      role:"student",
+      role: "student",
       startTime: new Date(_startTime),
       endTime: new Date(_endTime)
     }
@@ -67,7 +51,7 @@ export async function fetchStudentsLiveStatic(params) {
     return {
       success: true,
       total: res.totalNum,
-      data: res.userTimeList
+      data: addListIndex(res.userTimeList,params)
     }
   })
 }

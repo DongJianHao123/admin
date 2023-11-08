@@ -2,7 +2,7 @@ import { Action_type } from "@/common/constants";
 import U from "@/common/U";
 import { Utils } from "@/common/Utils";
 import { actions } from "@/services/actions";
-import { getAllCourseList, getCourseList } from "@/services/classHourStatistics";
+import {  getCourseList } from "@/services/classHourStatistics";
 import { PageContainer, ProTable } from "@ant-design/pro-components";
 import { Popover, Tag } from "antd";
 import { isEmpty } from "lodash";
@@ -19,7 +19,6 @@ const columns = [
   {
     title: '序号',
     dataIndex: 'index',
-    valueType: 'index',
     align: 'center',
     width: 60,
     onCell,
@@ -30,7 +29,7 @@ const columns = [
     hideInTable: true,
     search: true,
     valueType: 'select',
-    request: getAllCourseList,
+    request: getCourseList,
   },
   {
     title: '课程',
