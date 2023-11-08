@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Popconfirm } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
@@ -125,7 +125,7 @@ const Course = () => {
     return _params;
   };
   useEffect(() => {
-    const page_num = searchParam.get('page_num');
+    const page_num = searchParam.get('page_num') || 1;
     tableRef.current.setPageInfo({ ...tableRef.current.pageInfo, current: page_num })
     // page_num
   }, [])
