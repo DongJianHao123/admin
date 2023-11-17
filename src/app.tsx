@@ -5,7 +5,8 @@ import { history } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import { fetchClient } from './services/client';
-import 'react-quill/dist/quill.snow.css';
+import UseInit from './hooks/useInit';
+// import 'react-quill/dist/quill.snow.css';
 
 
 const loginPath = '/user/login';
@@ -92,6 +93,7 @@ export const layout: RuntimeAntdConfig = ({
     childrenRender: (children: any) => {
       return (
         <>
+          <UseInit />
           {children}
         </>
       );

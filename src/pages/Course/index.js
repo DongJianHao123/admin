@@ -6,7 +6,7 @@ import { fetchCourseList, updateCourse } from '@/services/course';
 
 import { history } from '@/utils';
 import U from '@/common/U';
-import { useSearchParams } from '@umijs/max';
+import { connect, useSearchParams } from '@umijs/max';
 
 const columns = (tableRef) =>
   [
@@ -113,7 +113,7 @@ const columns = (tableRef) =>
     },
   ].map((item) => ({ search: false, width: 120, ...item }));
 
-const Course = () => {
+const Course = (props) => {
   const tableRef = useRef();
   const [searchParam, setSearchParam] = useSearchParams()
 
@@ -127,7 +127,7 @@ const Course = () => {
   useEffect(() => {
     const page_num = searchParam.get('page_num') || 1;
     tableRef.current.setPageInfo({ ...tableRef.current.pageInfo, current: page_num })
-    // page_num
+    console.log(props);
   }, [])
   return (
     <PageContainer>
@@ -145,7 +145,8 @@ const Course = () => {
           ]);
           _params = U.obj.RemoveNulls(_params);
           setSearchParam({ page_num: _params['current'] })
-          return await fetchCourseList(_params);
+          const data = await fetchCourseList(_params);
+          return data
         }}
         toolBarRender={() => (
           <Button
@@ -162,4 +163,4 @@ const Course = () => {
   );
 };
 
-export default Course;
+export default connect(({ courses }) => ({ courses }))(Course);

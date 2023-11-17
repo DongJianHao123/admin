@@ -16,7 +16,7 @@ const Settings: LayoutSettings & {
   fixSiderbar: true,
   colorWeak: false,
   title: '管理后台',
-  pwa: false,
+  pwa: true,
   logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   iconfontUrl: '',
   siderMenuType: "sub",

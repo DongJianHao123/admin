@@ -6,7 +6,6 @@ import U from '@/common/U';
 
 export async function getCourseList() {
   return fetchCourseList({ size: 200 }).then(({ data }) => {
-    console.log(data);
     return data
       .map((item) => ({
         label: item.title || " ",
@@ -19,6 +18,11 @@ export async function getCourseList() {
   }
   );
 }
+
+export async function getAllCourseList() {
+  return (await fetchCourseList({ size: 200 })).data
+}
+
 
 export async function fetchCourseDateRec(params) {
   const _startTime = typeof params.startTime === "string" ? params.startTime : params.startTime.$d
@@ -51,8 +55,20 @@ export async function fetchStudentsLiveStatic(params) {
     return {
       success: true,
       total: res.totalNum,
-      data: addListIndex(res.userTimeList,params)
+      data: addListIndex(res.userTimeList, params)
     }
+  })
+}
+
+export const getClassroomTimeInfo = async (params) => {
+  return request('/analysis/api/room-timesget/getRoomTimesWithTotalNumByConditions', {
+    params: {
+      clientId: 385,
+      ...params,
+      sort: "startTime,desc"
+    }
+  }).then((res) => {
+    return res
   })
 }
 

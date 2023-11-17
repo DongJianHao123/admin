@@ -250,10 +250,10 @@ const CourseEdit = () => {
             ]}
           />
         </ProFormGroup>
-        {/* <ProFormTextArea
+        <ProFormTextArea
           name='info'
           label='广告位'
-        /> */}
+        />
         <ProFormGroup>
           <ProFormDigit
             name="courseIndex"
