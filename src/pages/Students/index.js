@@ -58,7 +58,7 @@ const columns = (courses = [], onCourseClick) =>
       width: 100,
       fixed: 'right',
       render: (registers) => {
-        let items = registers.map((item, index) => {
+        let items = courses.length > 0 ? registers.map((item, index) => {
           let { courseId, verify, uniCourseId } = item;
           const currentCourse = courses.find((item) => item.value.endsWith(courseId))
           return {
@@ -70,7 +70,7 @@ const columns = (courses = [], onCourseClick) =>
             key: index,
             item: item
           }
-        })
+        }) : []
         return (
           <Dropdown menu={{ items, onClick: (e) => onCourseClick(items[e.key].item) }} >
             <a onClick={(e) => e.preventDefault()}>
@@ -89,7 +89,7 @@ const Students = () => {
   const tableRef = useRef();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false)
-  const { courses } = useSelector(state => state.courses)
+  const { coursesKV } = useSelector(state => state.courses)
   const { students } = useSelector(state => state.students)
   const onCourseClick = (e) => {
     const { courseId, uniCourseId, phone } = e
@@ -127,7 +127,9 @@ const Students = () => {
       setList([..._list]);
     }
   };
-
+  useEffect(() => {
+    list.length < 1 && setList(students)
+  }, [students])
   const studentsExport = () => {
     setLoading(true)
     data2Excel(`学生信息表-${U.date.format(new Date(), "yyyy-MM-dd")}`, [
@@ -147,7 +149,7 @@ const Students = () => {
       <ProTable
         actionRef={tableRef}
         rowKey="id"
-        columns={columns(courses.courses, onCourseClick)}
+        columns={columns(coursesKV, onCourseClick)}
         search={true}
         request={async (params) => loadData(params)}
         dataSource={list}
