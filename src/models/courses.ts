@@ -29,8 +29,6 @@ const coursesModel: ModelType<CoursesState> = {
 
   reducers: {
     save: (state, { payload }) => {
-      console.log(payload);
-
       return {
         ...state,
         ...payload

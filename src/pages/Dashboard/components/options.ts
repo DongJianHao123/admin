@@ -1,5 +1,5 @@
 import U from "@/common/U";
-import { ValueName } from "..";
+import { TimeStatic, ValueName } from "..";
 
 export const getTimeChartData = (rawData: any) => {
   const list: Array<any> = (rawData?.daySummaryList || []).toReversed();
@@ -40,26 +40,33 @@ export const getTimeChartData = (rawData: any) => {
   };
 };
 
-export const getRegisterChartOption = () => {
+export const getRegisterChartOption = (data: TimeStatic[]) => {
   return {
     xAxis: {
       type: 'category',
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      data: data.map(item => item.date)
     },
     yAxis: {
       type: 'value'
     },
+    tooltip: {
+      formatter: ``,
+    },
     series: [
       {
-        data: [150, 230, 224, 218, 135, 147, 260],
+        data: data.map(item => item.num),
         type: 'line',
         radius: '60%',
+        label: {
+          show: true,
+          position: 'top'
+        }
       }
     ]
   }
 }
 
-export const getAgeChartOption=(data:ValueName[])=>{
+export const getAgeChartOption = (data: ValueName[]) => {
   return {
     // title: {
     //   text: 'Referer of a Website',
@@ -72,8 +79,8 @@ export const getAgeChartOption=(data:ValueName[])=>{
     legend: {
       orient: 'vertical',
       left: 'right',
-      top:'top',
-      show:true
+      top: 'top',
+      show: true
     },
     series: [
       {
@@ -84,7 +91,7 @@ export const getAgeChartOption=(data:ValueName[])=>{
           show: false,
           position: 'center'
         },
-        data:data,
+        data: data,
         emphasis: {
           itemStyle: {
             shadowBlur: 10,
