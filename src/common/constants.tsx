@@ -3,6 +3,8 @@ export const Action_type = {
   PLAYBACK: { label: "观看回放", value: "PLAYBACK" },
   ENTER: { label: "进入课堂", value: "ENTER" },
   EXIT: { label: "退出课堂", value: "EXIT" },
+  START_CLASS: { label: "上课", value: "START_CLASS" },
+  STOP_CLASS: { label: "下课", value: "STOP_CLASS" },
   CHATGPT: { label: "CHATGPT", value: "CHATGPT" },
   RECEIVED_STREAMS: { label: "接收流", value: "RECEIVED_STREAMS" },
   JOIN: { label: "签到", value: "JOIN" },
@@ -68,21 +70,35 @@ export const SMS_template = [
   },
 ]
 
+export enum EUserType {
+  STUDENT = '1',
+  TEACHER = '2',
+  VISITOR = '3',
+  TUTOR = '4',
+  ADMIN = '5',
+  PARENT = '6'
+}
+
 export const roles = [
+
   {
-    value: '1',
-    label: '学生',
-  },
-  {
-    value: '2',
+    value: EUserType.TEACHER,
+    color: 'geekblue',
     label: '教师',
   },
   {
-    value: '4',
+    value: EUserType.TUTOR,
+    color: 'blue',
     label: '助教',
   },
   {
-    value: '5',
+    value: EUserType.STUDENT,
+    color: 'cyan',
+    label: '学生',
+  },
+  {
+    value: EUserType.ADMIN,
+    color: 'red',
     label: '管理员',
   },
 ];

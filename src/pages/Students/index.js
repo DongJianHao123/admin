@@ -1,4 +1,5 @@
 import U from '@/common/U';
+import { Utils } from '@/common/Utils';
 import { data2Excel } from '@/common/data2Excel';
 import { EUserType } from '@/common/types';
 import { getCourseList } from '@/services/classHourStatistics';
@@ -65,7 +66,7 @@ const columns = (courses = [], onCourseClick) =>
             label: <div style={{ display: "flex", gap: "10px" }}>
               <span>课程号:{courseId}</span>
               <span style={{ flex: 1 }}>{currentCourse !== undefined ? currentCourse.label : '该课程已结束'}</span>
-              {item.status === EUserType.TEACHER && <Tag color={'success'}>老师</Tag>}
+              {Utils.role.getRoleTag(item.status)}
             </div>,
             key: index,
             item: item

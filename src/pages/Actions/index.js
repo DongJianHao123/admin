@@ -1,21 +1,23 @@
-import { Action_type } from "@/common/constants";
+import { Action_type, roles } from "@/common/constants";
 import U from "@/common/U";
 import { Utils } from "@/common/Utils";
 import { actions } from "@/services/actions";
-import {  getCourseList } from "@/services/classHourStatistics";
+import { getCourseList } from "@/services/classHourStatistics";
 import { PageContainer, ProTable } from "@ant-design/pro-components";
 import { Popover, Tag } from "antd";
 import { isEmpty } from "lodash";
 import moment from "moment";
 import './index.less'
 import CustomText from "@/components/CustomText";
+import { useSelector } from "@umijs/max";
+import { EUserType } from "@/common/types";
 
 let isSortAction = false;
 let dataSource = [];
 
 const onCell = ({ dataLength }, index) => dataLength - 1 === index ? { colSpan: 0 } : {};
 
-const columns = [
+const columns = (coursesKV) => [
   {
     title: '序号',
     dataIndex: 'index',
@@ -29,7 +31,7 @@ const columns = [
     hideInTable: true,
     search: true,
     valueType: 'select',
-    request: getCourseList,
+    request: async () => coursesKV,
   },
   {
     title: '课程',
@@ -62,9 +64,9 @@ const columns = [
     align: "center",
     fieldProps: {
       options: [
-        { label: <Tag color="green">老师</Tag>, value: 'teacher', },
-        { label: <Tag color="cyan">学生</Tag>, value: 'student' },
-        { label: <Tag color="geekblue">助教</Tag>, value: 'ta' },
+        { label: Utils.role.getRoleTag(EUserType.TEACHER), value: 'teacher', },
+        { label: Utils.role.getRoleTag(EUserType.TUTOR), value: 'ta' },
+        { label: Utils.role.getRoleTag(EUserType.STUDENT), value: 'student' },
       ],
     },
   },
@@ -158,13 +160,13 @@ const columns = [
 ]
 
 const Actions = () => {
-
+  const { coursesKV } = useSelector((state) => state.courses)
   return (
     <PageContainer>
       <ProTable
         className="action-table"
         rowKey="index"
-        columns={columns}
+        columns={columns(coursesKV)}
         search={{ labelWidth: 100, defaultCollapsed: false }}
         request={async (params) => {
           console.log("请求", params);

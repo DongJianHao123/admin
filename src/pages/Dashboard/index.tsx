@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  fetchConsumptionDuration,
+  fetchConsumptionDuration, fetchOrderAgenciesByConditions, fetchTotalSummaryCount,
   // fetchOrderAgenciesByConditions,
   // fetchTotalSummaryCount
 } from '@/services/dashboard';
@@ -22,6 +22,7 @@ import { getClassroomTimeInfo } from '@/services/classHourStatistics';
 import { getAgeChartOption, getRegisterChartOption, getTimeChartData } from './components/options';
 import { StudentsState } from '@/models/students';
 import { CoursesState } from '@/models/courses';
+import { Col, Empty, Row, Statistic } from 'antd';
 
 interface LiveCourse {
   title: string,
@@ -41,20 +42,20 @@ const static_day_num = 7;
 
 const Dashboard: React.FC = () => {
 
-  // const [durationData, setDurationData] = useState<Array<{ title: string, value: string, desc: string }>>([])
+  const [durationData, setDurationData] = useState<Array<{ title: string, value: string, desc: string }>>([])
   const { data } = useRequest(fetchConsumptionDuration);
   const [registers, setRegisters] = useState<{ roomActionList: IRoomAction[], totalNum: number }>({ roomActionList: [], totalNum: 0 })
   const [timeRegister, setTimeRegister] = useState<TimeStatic[]>([])
   const [roomInfo, setRoomInfo] = useState<IRoomInfo>()
   const [liveCourses, setLiveCourses] = useState<LiveCourse[]>([])
-  const [ValueNameList, setValueNameList] = useState<ValueName[]>([])
+  const [educationList, setEducationList] = useState<ValueName[]>([])
   const { courses }: CoursesState = useSelector((state: DvaState) => state.courses)
   const { students }: StudentsState = useSelector((state: DvaState) => state.students)
 
   let teachers = students.filter((item: IStudent) => item.status === EUserType.TEACHER || (item.registers!.findIndex(item => item.status === EUserType.TEACHER) > -1))
 
   const formatRegisters = (registers: IRoomAction[]) => {
-    const result = registers.reduce((acc: any, register) => {
+    const result: TimeStatic[] = registers.reduce((acc: any, register) => {
       const date = U.date.format(new Date(register.actionTime), 'yyyy-MM-dd')!.slice(5); // 截取日期部分（MM-DD）
       const existingItem = acc.find((item: { date: string, num: number }) => item.date === date);
       if (existingItem) {
@@ -64,7 +65,7 @@ const Dashboard: React.FC = () => {
       }
       return acc;
     }, []);
-    setTimeRegister(result)
+    setTimeRegister(result.reverse())
   }
 
   const loadAction = (actionType: string) => {
@@ -84,24 +85,24 @@ const Dashboard: React.FC = () => {
 
 
   useEffect(() => {
-    // fetchOrderAgenciesByConditions().then((res1) => {
-    //   let allDuration = 0;
-    //   res1.forEach((item: any) => {
-    //     allDuration += item.minutes * 60
-    //   });
-    //   durationData[0] = {
-    //     title: '购买总时长', value: U.date.remainingHour(allDuration), desc: `已购套餐包：${res1.length}个`
-    //   }
-    //   fetchTotalSummaryCount().then((res2) => {
-    //     durationData[1] = {
-    //       title: '消费总时长', value: U.date.remainingHour(res2.totalTimeLong), desc: `日平均量:${U.date.remainingHour(res2.totalTimeLong / res2.days)}`
-    //     }
-    //     durationData[2] = {
-    //       title: '剩余时长', value: U.date.remainingHour(allDuration - res2.totalTimeLong), desc: `预计可用:${allDuration - res2.totalTimeLong > 0 ? parseInt(((allDuration - res2.totalTimeLong) / (res2.totalTimeLong / res2.days)).toString()) : 0}天`
-    //     }
-    //     setDurationData([...durationData])
-    //   })
-    // })
+    fetchOrderAgenciesByConditions().then((res1) => {
+      let allDuration = 0;
+      res1.forEach((item: any) => {
+        allDuration += item.minutes * 60
+      });
+      durationData[0] = {
+        title: '购买总时长', value: U.date.remainingHour(allDuration), desc: `已购套餐包：${res1.length}个`
+      }
+      fetchTotalSummaryCount().then((res2) => {
+        durationData[1] = {
+          title: '消费总时长', value: U.date.remainingHour(res2.totalTimeLong), desc: `日平均量:${U.date.remainingHour(res2.totalTimeLong / res2.days)}`
+        }
+        durationData[2] = {
+          title: '剩余时长', value: U.date.remainingHour(allDuration - res2.totalTimeLong), desc: `预计可用:${allDuration - res2.totalTimeLong > 0 ? parseInt(((allDuration - res2.totalTimeLong) / (res2.totalTimeLong / res2.days)).toString()) : 0}天`
+        }
+        setDurationData([...durationData])
+      })
+    })
     loadAction(Action_type.REGISTER.value)
   }, [])
 
@@ -125,7 +126,7 @@ const Dashboard: React.FC = () => {
         let value = students.filter((student) => student.registers![student.registers!.length - 1].age === item).length
         _ValueNameList.push({ value, name: item })
       })
-      setValueNameList(_ValueNameList)
+      setEducationList(_ValueNameList)
     }
   }, [students])
 
@@ -155,6 +156,20 @@ const Dashboard: React.FC = () => {
   return (
     <div className="dashboard">
       <PageContainer>
+        <ProCard direction="row" ghost gutter={[8, 8]} style={{margin:0}}>
+          {durationData.map((item, index) => (
+            <ProCard
+              key={item.title}
+              colSpan={6}
+              title={<Statistic title={item.title} value={item.value} />}
+            >
+              <Row style={{ color: '#409eff' }} justify="space-between">
+                <Col>{item.desc}</Col>
+                <Col style={{ cursor: 'pointer' }}>{index === 2 ? "去充值" : "查看详情"}</Col>
+              </Row>
+            </ProCard>
+          ))}
+        </ProCard>
         <ul className='num-overview'>
           <li>课程总数 <span className='num'>{courses.length}</span></li>
           <li>老师总数 <span className='num'>{teachers.length}</span></li>
@@ -164,14 +179,17 @@ const Dashboard: React.FC = () => {
         <ProCard direction="row" ghost gutter={[8, 8]}>
           <ProCard colSpan={8} title="近30天直播课程" >
             <ul className='live-course'>
-              {liveCourses.map((liveCourse, index) => <li key={index}>
-                <span className='title'>{`${index + 1}、${liveCourse.title}`}</span>
-                <span className='num'>{liveCourse.count} 人</span>
-              </li>)}
+              {liveCourses.length > 0 ?
+                liveCourses.map((liveCourse, index) => <li key={index}>
+                  <span className='title'>{`${index + 1}、${liveCourse.title}`}</span>
+                  <span className='num'>{liveCourse.count} 人</span>
+                </li>)
+                :
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
             </ul>
           </ProCard>
           <ProCard colSpan={8} title="学生学历占比" >
-            <ReactECharts option={getAgeChartOption(ValueNameList)} />
+            <ReactECharts option={getAgeChartOption(educationList)} />
           </ProCard>
           <ProCard colSpan={8} title="近7天报名人数" >
             {/* <div id='register-chart' className='chart'></div> */}

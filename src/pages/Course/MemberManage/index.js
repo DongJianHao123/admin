@@ -19,6 +19,8 @@ import { Button, Form, message, Popconfirm, Switch } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import MemberManageForm from '../components/MemberManageForm';
 import { data2Excel } from '@/common/data2Excel';
+import { Utils } from '@/common/Utils';
+import { EUserType } from '@/common/types';
 
 const columns = (setDrawProps, tableRef) =>
   [
@@ -77,10 +79,11 @@ const columns = (setDrawProps, tableRef) =>
     {
       title: '角色',
       dataIndex: 'status',
+      search: true,
+      align:'center',
       valueType: 'select',
-      align: 'center',
       fieldProps: {
-        options: roles,
+        options: roles.map(r => { return { label: Utils.role.getRoleTag(r.value), value: r.value } })
       },
     },
     {

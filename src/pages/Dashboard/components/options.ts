@@ -49,6 +49,13 @@ export const getRegisterChartOption = (data: TimeStatic[]) => {
     yAxis: {
       type: 'value'
     },
+    grid: {
+      left: '3%',
+      right: '4%',
+      top: '5%',
+      // bottom: '3%',
+      containLabel: true
+    },
     tooltip: {
       formatter: ``,
     },
@@ -67,40 +74,86 @@ export const getRegisterChartOption = (data: TimeStatic[]) => {
 }
 
 export const getAgeChartOption = (data: ValueName[]) => {
-  return {
-    // title: {
-    //   text: 'Referer of a Website',
-    //   subtext: 'Fake Data',
-    //   left: 'center'
-    // },
+  let _data = data.sort((a, b) => a.value - b.value)
+  let allNum = data.reduce((a, b) => a + b.value, 0)
+  return _data.length > 0 ? {
     tooltip: {
-      trigger: 'item'
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      },
+      valueFormatter: (num: number) => ((num / allNum) * 100).toFixed(2) + "%",
     },
-    legend: {
-      orient: 'vertical',
-      left: 'right',
-      top: 'top',
-      show: true
+    legend: {},
+    grid: {
+      left:'1%',
+      right: '8%',
+      top: '5%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: (val: number) => val + "人",
+      },
+    },
+    yAxis: {
+      type: 'category',
+      data: _data.map(item => item.name)
+    },
+    visualMap: {
+      max: _data[(_data.length - 1)].value,
+      min: _data[0].value,
+      dimension: 0,
+      show: false,
+      inRange: {
+        color: ['#67BDF9', '#4F6DEE']
+      }
     },
     series: [
       {
-        name: 'Access From',
-        type: 'pie',
-        radius: '80%',
+        type: 'bar',
+        data: _data.map(item => item.value),
+        radius: '60%',
         label: {
-          show: false,
-          position: 'center'
+          show: true,
+          position: 'right',
+          formatter: (val: ValueName) => val.value + '人'
         },
-        data: data,
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        }
       }
     ]
-  };
+  } : {};
 
 }
+
+
+
+//   tooltip: {
+//     trigger: 'item'
+//   },
+//   legend: {
+//     orient: 'vertical',
+//     left: 'right',
+//     top: 'top',
+//     show: true
+//   },
+//   series: [
+//     {
+//       name: 'Access From',
+//       type: 'pie',
+//       radius: '80%',
+//       label: {
+//         show: false,
+//         position: 'center'
+//       },
+//       data: data,
+//       emphasis: {
+//         itemStyle: {
+//           shadowBlur: 10,
+//           shadowOffsetX: 0,
+//           shadowColor: 'rgba(0, 0, 0, 0.5)'
+//         }
+//       }
+//     }
+//   ]
+// };

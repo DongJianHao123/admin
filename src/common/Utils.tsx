@@ -1,6 +1,7 @@
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Tag } from 'antd';
 import ReactDOM from 'react-dom';
 import zhCN from 'antd/lib/locale/zh_CN';
+import { roles } from './constants';
 
 export const Utils = {
   common: {
@@ -39,4 +40,10 @@ export const Utils = {
       return div;
     },
   },
+  role: {
+    getRoleTag: (value: string) => {
+      const role = roles.find((item) => item.value === value);
+      return <Tag color={role?.color}>{role?.label}</Tag>
+    }
+  }
 };

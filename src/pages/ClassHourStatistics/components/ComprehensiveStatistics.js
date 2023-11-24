@@ -14,6 +14,9 @@ import * as XLSX from "xlsx"
 import ExportJsonExcel from "js-export-excel"
 import { ExportOutlined } from '@ant-design/icons';
 import { data2Excel } from '@/common/data2Excel';
+import { Utils } from '@/common/Utils';
+import { EUserType } from '@/common/types';
+import { roles } from '@/common/constants';
 
 let isSortAction = false;
 let dataSource = [];
@@ -35,9 +38,9 @@ const packColumns = (dateRec) =>
       valueType: 'select',
       fieldProps: {
         options: [
-          { label: '老师', value: 'teacher' },
-          { label: '学生', value: 'student' },
-          { label: '助教', value: 'ta' },
+          { label: Utils.role.getRoleTag(EUserType.TEACHER), value: 'teacher', },
+          { label: Utils.role.getRoleTag(EUserType.TUTOR), value: 'ta' },
+          { label: Utils.role.getRoleTag(EUserType.STUDENT), value: 'student' },
         ],
       },
     },
@@ -119,7 +122,7 @@ const packColumns = (dateRec) =>
       dataIndex: 'name',
       align: 'center',
       width: 80,
-      renderText: (name, row, index) =>row.role === 'teacher' ?<span style={{color:'green'}}>{name + "(老师)" }</span> : name,
+      renderText: (name, row, index) =>row.role === 'teacher' ?<><span style={{marginRight:10}}>{name}</span>{Utils.role.getRoleTag(EUserType.TEACHER)}</> : name,
       onCell: ({ dataLength }, index) => {
         if (dataLength - 1 === index) {
           return {
