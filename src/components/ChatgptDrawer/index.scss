@@ -21,6 +21,10 @@
     text-align: center;
     font-weight: 550;
     font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
 
   ul {
@@ -55,7 +59,7 @@
           }
 
           p {
-            max-width: 90%;
+            // max-width: 90%;
             font-size: 14px;
             background-color: rgb(210, 249, 209);
             padding: 8px 12px;
@@ -111,12 +115,13 @@
 
   .footer {
     display: flex;
+    gap: 10px;
+
+    .btn {}
 
     .input {
       font-size: 14px;
       flex: 1;
-      margin-left: 30px;
-      margin-right: 10px;
       border: 1px solid rgb(229, 231, 235);
       border-radius: 5px;
       padding: 0 10px;
@@ -137,4 +142,36 @@
       }
     }
   }
+}
+
+.model-list {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  li {
+    cursor: pointer;
+    padding: 2px 6px;
+    border: 1px solid #fff;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    .point {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .action {
+      background-color: var(--ant-primary-color);
+    }
+
+    &:hover {
+    color:var(--ant-primary-color) ;
+    }
+  }
+
 }

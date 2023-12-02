@@ -23,3 +23,20 @@ export const getChatGptProcess = (
     // console.log('接口请求完成', data);
   });
 };
+
+export const getHunyuanChat = (question, onDownloadProgress) => {
+  return axios({
+    method: "post",
+    url: "http://localhost:3000/hunyuan/chat",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: {
+      question
+    },
+    onDownloadProgress: onDownloadProgress,
+  }).catch((err) => {
+    console.log(123445, err);
+    throw err
+  })
+}

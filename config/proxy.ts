@@ -33,6 +33,13 @@ export default {
         '^/maodou-api': '',
       },
     },
+    '/hunyuan-api': {
+      target: 'http://localhost:3000',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/hunyuan-api': '',
+      },
+    },
   },
   /**
    * @name 详细的代理配置

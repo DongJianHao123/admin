@@ -1,7 +1,7 @@
 import U from "@/common/U"
-import { getChatGptProcess } from "@/services/common"
+import { getChatGptProcess, getHunyuanChat } from "@/services/common"
 import { DeleteOutlined, SendOutlined, SmileOutlined } from "@ant-design/icons"
-import { Avatar, Button, Drawer, Input, Modal, message } from "antd"
+import { Avatar, Button, Drawer, Input, Modal, Popover, message } from "antd"
 import { useEffect, useRef, useState } from "react"
 import './index.scss'
 import copy from "copy-to-clipboard"
@@ -15,6 +15,7 @@ interface IProps {
 }
 
 const CHAT_KET = "chatgpt_history";
+const HUNYUAN_KET = "hunyuan_history";
 
 const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
   const ulRef = useRef<HTMLUListElement>(null)
@@ -22,6 +23,7 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
   let [history, setHistory] = useState<IChatgptHistory[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [question, setQuestion] = useState<string>(prompt);
+  const [type, setType] = useState(CHAT_KET);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -47,7 +49,7 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
 
 
   const setChatStorage = () => {
-    localStorage.setItem(CHAT_KET, JSON.stringify(history))
+    localStorage.setItem(type, JSON.stringify(history))
   }
 
 
@@ -55,14 +57,39 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
     const data = JSON.parse(chunk);
     history[history.length - 1].answer = data.text;
 
-    if (!data.delta) {
+    if (data.detail.choices[0].finish_reason === 'stop') {
       history[history.length - 1].id = data.id;
       history[history.length - 1].parentMessageId = data.parentMessageId;
       history[history.length - 1].isEnd = true;
       setChatStorage();
       setLoading(false)
     }
+    setHistory([...history])
+    scrollToBottom()
+  }
 
+  const handleHunyuanAnswer = (responseText: string) => {
+    let data = ''
+    const answerArr = responseText.split('\n').map(item => {
+      try {
+        const obj = JSON.parse(item)
+        data += obj.Choices[0].Delta.Content
+        return obj
+      } catch (error) {
+        console.log('parse Error', item);
+        return {}
+      }
+    })
+
+    history[history.length - 1].answer = data;
+    const lastOne = answerArr[answerArr.length - 1]
+    if (lastOne && lastOne.Choices[0].FinishReason === 'stop') {
+      history[history.length - 1].id = lastOne.id;
+      history[history.length - 1].parentMessageId = lastOne.id;
+      history[history.length - 1].isEnd = true;
+      setChatStorage();
+      setLoading(false)
+    }
     setHistory([...history])
     scrollToBottom()
   }
@@ -74,7 +101,6 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
     let parentMessageId = history ? history[history.length - 1]?.id : "";
     setLoading(true)
     addHistory();
-
     let _question = question
     setQuestion("");
     try {
@@ -86,7 +112,7 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
         if (lastIndex !== -1)
           chunk = responseText.substring(lastIndex)
         try {
-          console.log(chunk);
+          console.log(JSON.parse(chunk));
           handleAnswer(chunk)
         } catch (err) {
           console.log(err);
@@ -100,17 +126,31 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
       }))
     }
   }
+  const hunyuanSend = () => {
+    if (U.str.isEmpty(question) || loading) return
+    setLoading(true)
+    addHistory();
 
-
-
-  const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.code === "Enter" && !loading) chatGptSend();
+    let _question = question
+    setQuestion("");
+    getHunyuanChat(_question, (event: any) => {
+      const xhr = event.target
+      const { responseText }: { responseText: string } = xhr
+      handleHunyuanAnswer(responseText)
+    }).catch(() => {
+      let obj = { Choices: [{ FinishReason: 'stop', Delta: { Content: '网络好像出错了，请重试！' } }] };
+      handleHunyuanAnswer(JSON.stringify(obj))
+    })
   }
 
+  const send = () => {
+    if (type === CHAT_KET) chatGptSend()
+    if (type === HUNYUAN_KET) hunyuanSend()
+  }
 
-  // const setChatgptAction = (question:string) => {
-  //   http.setRoomAction({ ...globalParams }, ROOM_ACTION.CAHTGPT.value, question);
-  // }
+  const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.code === "Enter" && !loading) send()
+  }
 
   const handlerClear = () => {
     Modal.confirm({
@@ -136,15 +176,21 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
 
   useEffect(() => {
     try {
-      setHistory(JSON.parse(localStorage.getItem(CHAT_KET) || ""));
+      setHistory(JSON.parse(localStorage.getItem(type) || ""));
     } catch (error) {
-      localStorage.removeItem(CHAT_KET)
+      localStorage.removeItem(type)
+      setHistory([])
     }
-  }, [])
+  }, [type])
 
   useEffect(() => {
     if (open) scrollToBottom();
   }, [open, history, history.length])
+
+  const checkModelContent = <ul className="model-list">
+    <li onClick={() => setType(CHAT_KET)}> <span className={type === CHAT_KET ? "action point" : 'point'}></span>chatgpt3.5</li>
+    <li onClick={() => setType(HUNYUAN_KET)}><span className={type === HUNYUAN_KET ? "action point" : 'point'}></span>腾讯云混元大模型3.0</li>
+  </ul>
 
   return <>
     {contextHolder}
@@ -152,7 +198,10 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
       className="chatgpt-container"
       title={
         <div className="title">
-          ChatGPT小助手
+          <div>
+            {type === CHAT_KET && "ChatGPT小助手"}
+            {type === HUNYUAN_KET && "混元小助手"}
+          </div>
         </div>
       }
       placement={"left"}
@@ -170,7 +219,7 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
           const { index, question, answer, createdAt, isEnd } = item;
           return <li key={index} >
             <div className="question">
-              <Avatar size={40} style={{ minWidth: "40px", backgroundColor: '#1890FF', verticalAlign: 'middle' }} gap={1}>
+              <Avatar size={40} style={{ minWidth: "40px", backgroundColor: '#00A8C5', verticalAlign: 'middle' }} gap={1}>
                 {"admin"}
               </Avatar>
 
@@ -180,7 +229,10 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
               </div>
             </div>
             <div className="answer">
-              <img className="avatar" src={"/icons/chatgpt-logo.jpg"} />
+              {type === CHAT_KET && <img className="avatar" src={"/icons/chatgpt-logo.jpg"} />}
+              {type === HUNYUAN_KET && <Avatar size={40} style={{ fontSize:14, minWidth: "40px", backgroundColor: '#1890FF', verticalAlign: 'middle' }} gap={1}>
+                {"混元"}
+              </Avatar>}
               <div className="content">
                 <div className="time">{createdAt}</div>
                 <p>{answer}
@@ -198,9 +250,12 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
 
       </ul>
       <div className="footer">
-        <Button className="clear-btn" disabled={loading || !history || history?.length < 1} onClick={() => handlerClear()} ><DeleteOutlined /></Button>
+        <Button className="btn" disabled={loading || !history || history?.length < 1} onClick={() => handlerClear()} ><DeleteOutlined /></Button>
+        <Popover placement="top" title={'切换模型'} content={checkModelContent} trigger="click">
+          <Button className="btn" disabled={loading} >切换</Button>
+        </Popover>
         <Input autoFocus onFocus={() => scrollToBottom()} onKeyDown={(e) => handleOnKeyDown(e)} value={question} onChange={(e) => setQuestion(e.target.value)} className="input" placeholder="请输入您的问题" />
-        <Button className="send-btn" disabled={loading} onClick={() => chatGptSend()} icon={<SendOutlined />} type="primary">发送</Button>
+        <Button className="send-btn" disabled={loading} onClick={() => send()} icon={<SendOutlined />} type="primary">发送</Button>
       </div>
     </Drawer >
   </>
