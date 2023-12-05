@@ -27,7 +27,7 @@ export const getChatGptProcess = (
 export const getHunyuanChat = (question, onDownloadProgress) => {
   return axios({
     method: "post",
-    url: "http://localhost:3000/hunyuan/chat",
+    url: "http://101.200.208.215:8055/hunyuan/chat",
     headers: {
       'Content-Type': 'application/json',
     },
@@ -36,7 +36,6 @@ export const getHunyuanChat = (question, onDownloadProgress) => {
     },
     onDownloadProgress: onDownloadProgress,
   }).catch((err) => {
-    console.log(123445, err);
     throw err
   })
 }

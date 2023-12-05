@@ -83,7 +83,7 @@ const ChatgptDrawer = ({ open, handleClose, prompt }: IProps) => {
 
     history[history.length - 1].answer = data;
     const lastOne = answerArr[answerArr.length - 1]
-    if (lastOne && lastOne.Choices[0].FinishReason === 'stop') {
+    if (lastOne.Choices && lastOne.Choices[0].FinishReason === 'stop') {
       history[history.length - 1].id = lastOne.id;
       history[history.length - 1].parentMessageId = lastOne.id;
       history[history.length - 1].isEnd = true;
