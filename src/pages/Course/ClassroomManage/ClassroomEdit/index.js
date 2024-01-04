@@ -78,19 +78,20 @@ const ClassroomEdit = () => {
   };
 
   const handleSubmit = async (values) => {
+    const { coverUrl, url } = values;
     (isAdd
       ? createClassroom({
-          courseId: searchParams.get('courseId'),
-          roomId: searchParams.get('roomId'),
-          ...values,
-          coverUrl: values.coverUrl[0].url,
-          choseUrl: video.url,
-        })
+        courseId: searchParams.get('courseId'),
+        roomId: searchParams.get('roomId'),
+        ...values,
+        coverUrl: coverUrl ? coverUrl[0].url : "",
+        choseUrl: url,
+      })
       : updateClassroom({
-          ...values,
-          coverUrl: values.coverUrl[0].url,
-          choseUrl: video.url || '',
-        })
+        ...values,
+        coverUrl: coverUrl ? coverUrl[0].url : "",
+        choseUrl: url,
+      })
     ).then((res) => {
       message.success(`${isAdd ? '新增' : '编辑'}课堂成功`);
       history.back();
