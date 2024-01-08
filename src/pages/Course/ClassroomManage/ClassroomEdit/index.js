@@ -9,7 +9,7 @@ import {
   ProFormUploadButton,
 } from '@ant-design/pro-components';
 import { useParams, useSearchParams } from '@umijs/max';
-import { Button, Col, Form, Progress, Row, Space, Upload, message } from 'antd';
+import { Button, Col, Form, Input, Progress, Row, Select, Space, Switch, Upload, message } from 'antd';
 import { isUndefined } from 'lodash';
 import { useEffect, useState } from 'react';
 import { fileUpload, fileUpload2, requiredRule } from '@/utils';
@@ -28,11 +28,17 @@ import {
 } from '@ant-design/icons';
 import { eventbus } from '@/common/eventbus';
 
+const VideoTypes = {
+  UPLOAD: 1,
+  INPUT: 2,
+}
+
 const ClassroomEdit = () => {
   const params = useParams();
   const { classroomId, courseId } = params;
   const isAdd = classroomId === '0' || !classroomId;
   const [video, setVideo] = useState({});
+  const [videoType, setVideoType] = useState(VideoTypes.UPLOAD)
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const { data = {}, run } = useRequest(fetchClassroomInfo, { manual: true });
@@ -78,19 +84,23 @@ const ClassroomEdit = () => {
   };
 
   const handleSubmit = async (values) => {
-    const { coverUrl, url } = values;
+    const { coverUrl } = values;
+    if (loading) {
+      message.warn('请等待上传完成')
+      return
+    }
     (isAdd
       ? createClassroom({
         courseId: searchParams.get('courseId'),
         roomId: searchParams.get('roomId'),
         ...values,
         coverUrl: coverUrl ? coverUrl[0].url : "",
-        choseUrl: url,
+        choseUrl: video.url,
       })
       : updateClassroom({
         ...values,
         coverUrl: coverUrl ? coverUrl[0].url : "",
-        choseUrl: url,
+        choseUrl: video.url,
       })
     ).then((res) => {
       message.success(`${isAdd ? '新增' : '编辑'}课堂成功`);
@@ -104,7 +114,6 @@ const ClassroomEdit = () => {
       setVideo({});
     } else {
       eventbus.emit('unsubscribe');
-
       setVideo({
         ...video,
         _status: 'cancel',
@@ -119,6 +128,12 @@ const ClassroomEdit = () => {
       e.nativeEvent.stopImmediatePropagation();
     }
   };
+
+  const handleChangeValueType = () => {
+    loading && !video.url && handleCancelUpload();
+    setLoading(false);
+    setVideoType(videoType === VideoTypes.UPLOAD ? VideoTypes.INPUT : VideoTypes.UPLOAD)
+  }
 
   useEffect(() => {
     if (!isAdd)
@@ -202,78 +217,86 @@ const ClassroomEdit = () => {
           name="choseUrl"
           label="课程视频"
           colProps={{ md: 24, xl: 12 }}
-        >
-          <Upload
-            maxCount={1}
-            fileList={[]}
-            action={(e) => handleVideoUpload(e, 'choseUrl')}
-          >
-            <Button onClick={updateVideo} icon={<UploadOutlined />}>
-              上传
-            </Button>
-          </Upload>
-          {loading && (
-            <div
-              style={{ display: 'flex', alignItems: 'center', width: '360px' }}
-            >
-              <Progress percent={video.percent} status={video._status} />
-              <a
-                style={{ width: '80px', marginLeft: '10px' }}
-                onClick={handleCancelUpload}
+        ><>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              {videoType === VideoTypes.UPLOAD && <Upload
+                maxCount={1}
+                fileList={[]}
+                action={(e) => handleVideoUpload(e, 'choseUrl')}
               >
-                {!!video.url ? (
-                  <>
+                <Button onClick={updateVideo} icon={<UploadOutlined />}>
+                  上传
+                </Button>
+              </Upload>
+              }
+              {videoType === VideoTypes.INPUT && <><Input value={video.url} onChange={(e) => { setVideo({ ...video, url: e.target.value }) }} placeholder='请输入视频链接' /></>}
+              <Button type='link' onClick={handleChangeValueType}>
+                {videoType === VideoTypes.UPLOAD ? '填写视频链接' : '上传视频'}
+              </Button>
+            </div>
+            {loading && (
+              <div
+                style={{ display: 'flex', alignItems: 'center', width: '360px' }}
+              >
+                <Progress percent={video.percent} status={video._status} />
+                <a
+                  style={{ width: '80px', marginLeft: '10px' }}
+                  onClick={handleCancelUpload}
+                >
+                  {!!video.url ? (
+                    <>
+                      <DeleteOutlined style={{ marginRight: '3px' }} />
+                      清空
+                    </>
+                  ) : (
+                    <>
+                      <DisconnectOutlined style={{ marginRight: '3px' }} /> 取消
+                    </>
+                  )}
+                </a>
+              </div>
+            )}
+            {!video.url && video._status === 'active' && <span>正在上传</span>}
+            {!!video.url && video.url !== '-' && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '400px',
+                  gap: '30px',
+                  marginTop: '10px',
+                }}
+              >
+                <a
+                  href={video.url}
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    display: 'block',
+                  }}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <LinkOutlined style={{ marginRight: '10px' }} />
+                  {video.url}
+                </a>
+                {!loading && (
+                  <a
+                    style={{ width: '150px' }}
+                    onClick={() => {
+                      setLoading(false);
+                      setVideo({});
+                      console.log(video);
+                    }}
+                  >
                     <DeleteOutlined style={{ marginRight: '3px' }} />
                     清空
-                  </>
-                ) : (
-                  <>
-                    <DisconnectOutlined style={{ marginRight: '3px' }} /> 取消
-                  </>
+                  </a>
                 )}
-              </a>
-            </div>
-          )}
-          {!video.url && video._status === 'active' && <span>正在上传</span>}
-          {!!video.url && video.url !== '-' && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                width: '400px',
-                gap: '30px',
-                marginTop: '10px',
-              }}
-            >
-              <a
-                href={video.url}
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  display: 'block',
-                }}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <LinkOutlined style={{ marginRight: '10px' }} />
-                {video.url}
-              </a>
-              {!loading && (
-                <a
-                  style={{ width: '150px' }}
-                  onClick={() => {
-                    setLoading(false);
-                    setVideo({});
-                    console.log(video);
-                  }}
-                >
-                  <DeleteOutlined style={{ marginRight: '3px' }} />
-                  清空
-                </a>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+          </>
         </ProFormField>
         <ProFormSelect
           name="type"

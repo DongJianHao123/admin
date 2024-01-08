@@ -16,7 +16,7 @@ jobs:
       - name: install nodejs
         uses: actions/setup-node@v3.0.0
         with:
-          node-version: '16.17.0'
+          node-version: '18.1.0'
 
       - name: install pkg
         run: |

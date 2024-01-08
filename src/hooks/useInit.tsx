@@ -6,7 +6,7 @@ const useInit = ({ dispatch }: any) => {
   useEffect(() => {
     dispatch({ type: 'courses/getAll' })
     dispatch({ type: 'students/getAll' })
-  }, [initialState.currentClient])
+  }, [initialState?.currentClient])
   return <></>
 }
 
