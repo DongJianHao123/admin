@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  fetchConsumptionDuration, fetchOrderAgenciesByConditions, fetchTotalSummaryCount,
+  fetchConsumptionDuration, fetchOrderAgenciesByConditions, fetchTotalSummaryCount, getAdditionFixesWithTotalNumByConditions,
   // fetchOrderAgenciesByConditions,
   // fetchTotalSummaryCount
 } from '@/services/dashboard';
@@ -94,13 +94,17 @@ const Dashboard: React.FC = () => {
         title: '购买总时长', value: U.date.remainingHour(allDuration), desc: `已购套餐包：${res1.length}个`
       }
       fetchTotalSummaryCount().then((res2) => {
-        durationData[1] = {
-          title: '消费总时长', value: U.date.remainingHour(res2.totalTimeLong), desc: `日平均量:${U.date.remainingHour(res2.totalTimeLong / res2.days)}`
-        }
-        durationData[2] = {
-          title: '剩余时长', value: U.date.remainingHour(allDuration - res2.totalTimeLong), desc: `预计可用:${allDuration - res2.totalTimeLong > 0 ? parseInt(((allDuration - res2.totalTimeLong) / (res2.totalTimeLong / res2.days)).toString()) : 0}天`
-        }
-        setDurationData([...durationData])
+        console.log(res2);
+        getAdditionFixesWithTotalNumByConditions().then((data) => {
+          const timeSum = res2.totalTimeLong + data.totalTimeLong
+          durationData[1] = {
+            title: '消费总时长', value: U.date.remainingHour(timeSum), desc: `日平均量:${U.date.remainingHour(timeSum / res2.days)}`
+          }
+          durationData[2] = {
+            title: '剩余时长', value: U.date.remainingHour(allDuration - timeSum), desc: `预计可用:${allDuration - timeSum > 0 ? parseInt(((allDuration - timeSum) / (timeSum / res2.days)).toString()) : 0}天`
+          }
+          setDurationData([...durationData])
+        })
       })
     })
     loadAction(Action_type.REGISTER.value)
@@ -156,7 +160,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="dashboard">
       <PageContainer>
-        <ProCard direction="row" ghost gutter={[8, 8]} style={{margin:0}}>
+        <ProCard direction="row" ghost gutter={[8, 8]} style={{ margin: 0 }}>
           {durationData.map((item, index) => (
             <ProCard
               key={item.title}

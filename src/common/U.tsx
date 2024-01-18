@@ -83,7 +83,7 @@ const U = {
       let res = remainTime >= 0 ? '' : '-';
       let _remainTime = remainTime >= 0 ? remainTime : remainTime * (-1)
       let hour = parseInt((_remainTime / 3600).toString());
-      let minute = parseInt(((_remainTime % 3600) / 60).toString());
+      let minute = Math.round(((_remainTime % 3600) / 60));
       if (hour >= 0) {
         res = res + (hour + '时')
       } if (minute >= 0) {

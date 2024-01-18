@@ -17,3 +17,7 @@ export async function fetchTotalSummaryCount() {
     '/analysis/api/day-summaries/getTotalSummaryCount?clientId=483',
   );
 }
+export const getTotalSummaryMultiflowCount = () => request(`/analysis/api/day-summaries/getTotalSummaryMultiflowCount?clientId=483`);
+
+export const getAdditionFixesWithTotalNumByConditions = () => request(`/analysis/api/addition-fixes/getAdditionFixesWithTotalNumByConditions?clientId=483`,);
+
