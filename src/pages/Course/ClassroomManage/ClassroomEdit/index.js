@@ -73,6 +73,7 @@ const ClassroomEdit = () => {
           _status: 'success',
           url: `https://ssl.cdn.maodouketang.com/${res.key}`,
         });
+        setLoading(false)
         message.success('上传成功');
       },
       next: (res) => {

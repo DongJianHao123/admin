@@ -52,8 +52,8 @@ export const getRegisterChartOption = (data: TimeStatic[]) => {
     grid: {
       left: '3%',
       right: '4%',
-      top: '5%',
-      // bottom: '3%',
+      top: '10%',
+      bottom: '3%',
       containLabel: true
     },
     tooltip: {
@@ -88,6 +88,7 @@ export const getAgeChartOption = (data: ValueName[]) => {
     grid: {
       left:'1%',
       right: '8%',
+      bottom: '10%',
       top: '5%',
       containLabel: true
     },

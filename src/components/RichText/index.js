@@ -269,7 +269,7 @@ const Editor = (props) => {
         theme="snow"
         placeholder="请输入"
         modules={modules}
-        style={{ height: props.height }}
+        style={{ height: props.height, whiteSpace: 'pre-wrap' }}
         {...props}
       />
     </>

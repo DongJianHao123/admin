@@ -99,7 +99,7 @@ const CourseEdit = () => {
   useEffect(() => {
     if (isAdd) {
       runFac().then((courseAmount) =>
-        form.setFieldsValue({ courseId: 100 + +courseAmount + 1 }),
+        form.setFieldsValue({ courseId: 100 + +courseAmount + 1, showqr: 3, gradeLevel: 0 }),
       );
     } else {
       runFci(courseId).then(form.setFieldsValue);
@@ -222,38 +222,37 @@ const CourseEdit = () => {
               },
             ]}
           />
-          <ProFormSelect
-            name="showqr"
-            label="报名权限"
-            required
-            labelCol={{ span: 7 }}
-            colProps={{ md: 24, xl: 5 }}
-            placeholder="请选择"
-            rules={requiredRule}
-            request={async () => [
-              {
-                value: 0,
-                label: '无权限',
-              },
-              {
-                value: 1,
-                label: '只能进入教室',
-              },
-              {
-                value: 2,
-                label: '只能观看回放',
-              },
-              {
-                value: 3,
-                label: '所有权限',
-              },
-            ]}
-          />
+
         </ProFormGroup>
-        <ProFormTextArea
+        <ProFormSelect
+          name="showqr"
+          label="进入教室和观看回放的权限"
+          labelCol={{ span: 12 }}
+          colProps={{ md: 24, xl: 8 }}
+          rules={requiredRule}
+          options={[
+            {
+              value: 0,
+              label: '无权限',
+            },
+            {
+              value: 1,
+              label: '只能进入教室',
+            },
+            {
+              value: 2,
+              label: '只能观看回放',
+            },
+            {
+              value: 3,
+              label: '所有权限',
+            },
+          ]}
+        />
+        {/* <ProFormTextArea
           name='info'
           label='广告位'
-        />
+        /> */}
         <ProFormGroup>
           <ProFormDigit
             name="courseIndex"

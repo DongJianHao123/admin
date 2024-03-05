@@ -6,6 +6,7 @@ import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import { fetchClient } from './services/client';
 import UseInit from './hooks/useInit';
+import './style/quill.bubble.css'
 // import 'react-quill/dist/quill.snow.css';
 
 
