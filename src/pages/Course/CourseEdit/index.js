@@ -96,6 +96,22 @@ const CourseEdit = () => {
     }
   };
 
+  const copyCourse = () => {
+    runFac().then((courseAmount) => {
+      const data = form.getFieldsValue();
+      delete data.id;
+      data.coverUrl = data.coverUrl[0].url
+      data.courseId = 100 + +courseAmount + 1
+      console.log(data);
+      createCourse(data).then(() => {
+        message.success(`拷贝成功`);
+        history.back();
+      })
+    }
+    );
+
+  }
+
   useEffect(() => {
     if (isAdd) {
       runFac().then((courseAmount) =>
@@ -133,7 +149,10 @@ const CourseEdit = () => {
             return (
               <Row style={{ marginTop: '90px' }}>
                 <Col span={14} offset={4}>
-                  <Space>{doms}</Space>
+                  <Space>
+                    {doms}
+                    {!isAdd && <Button type='primary' onClick={copyCourse}>拷贝课程</Button>}
+                  </Space>
                 </Col>
               </Row>
             );
