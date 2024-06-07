@@ -10,104 +10,98 @@
  */
 export default [
   {
-    path: '/user',
+    path: '/message',
     layout: false,
     routes: [
       {
-        name: 'login',
-        path: '/user/login',
-        component: './User/Login',
+        name: 'message',
+        path: '/message/transfer',
+        component: './Message/Transfer',
       },
     ],
   },
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    icon: 'dashboard',
-    component: './Dashboard',
-  },
-  {
-    path: '/homepage',
-    name: 'homepage',
-    icon: 'home',
-    component: './Homepage',
-  },
-  {
-    path: '/course',
-    name: 'course',
-    icon: 'book',
-    routes: [
-      {
-        path: '/course',
-        component: './Course',
-      },
-      {
-        path: '/course/edit/:courseId',
-        component: './Course/CourseEdit',
-      },
-      {
-        path: '/course/member-manage/:courseId',
-        component: './Course/MemberManage',
-      },
-      {
-        path: '/course/classroom-manage/:courseId',
-        component: './Course/ClassroomManage',
-      },
-      {
-        path: '/course/classroom-manage/edit/:courseId/:classroomId',
-        component:"./Course/ClassroomManage/ClassroomEdit"
-      },
-    ],
-  },
-  {
-    path: '/students',
-    name: 'students',
-    icon: 'user',
-    component: './Students',
-  },
-  {
-    path: '/operate',
-    name: 'operate',
-    icon: 'FundProjectionScreenOutlined',
-    component: './Operate',
-  },
-  {
-    path: '/class/hour/statistics',
-    name: 'class.hour.statistics',
-    icon: 'CarryOutOutlined',
-    component: './ClassHourStatistics',
-  },
-  {
-    path: '/actions',
-    name: 'actions',
-    icon: 'EyeOutlined',
-    component: './Actions',
-  },
-
-  // {
-  //   path: '/admin',
-  //   name: 'admin',
-  //   icon: 'crown',
-  //   access: 'canAdmin',
-  //   routes: [
-  //     {
-  //       path: '/admin',
-  //       redirect: '/admin/sub-page',
-  //     },
-  //     {
-  //       path: '/admin/sub-page',
-  //       name: 'sub-page',
-  //       component: './Admin',
-  //     },
-  //   ],
-  // },
   {
     path: '/',
-    redirect: '/dashboard',
+    redirect: '/message/transfer',
   },
   {
     path: '*',
     layout: false,
-    component: './404',
+    redirect: '/message/transfer',
   },
+  // {
+  //   path: '/user',
+  //   layout: false,
+  //   routes: [
+  //     {
+  //       name: 'login',
+  //       path: '/user/login',
+  //       component: './User/Login',
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: '/dashboard',
+  //   name: 'dashboard',
+  //   icon: 'dashboard',
+  //   component: './Dashboard',
+  // },
+  // {
+  //   path: '/homepage',
+  //   name: 'homepage',
+  //   icon: 'home',
+  //   component: './Homepage',
+  // },
+  // {
+  //   path: '/course',
+  //   name: 'course',
+  //   icon: 'book',
+  //   routes: [
+  //     {
+  //       path: '/course',
+  //       component: './Course',
+  //     },
+  //     {
+  //       path: '/course/edit/:courseId',
+  //       component: './Course/CourseEdit',
+  //     },
+  //     {
+  //       path: '/course/member-manage/:courseId',
+  //       component: './Course/MemberManage',
+  //     },
+  //     {
+  //       path: '/course/classroom-manage/:courseId',
+  //       component: './Course/ClassroomManage',
+  //     },
+  //     {
+  //       path: '/course/classroom-manage/edit/:courseId/:classroomId',
+  //       component:"./Course/ClassroomManage/ClassroomEdit"
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: '/students',
+  //   name: 'students',
+  //   icon: 'user',
+  //   component: './Students',
+  // },
+  // {
+  //   path: '/operate',
+  //   name: 'operate',
+  //   icon: 'FundProjectionScreenOutlined',
+  //   component: './Operate',
+  // },
+  // {
+  //   path: '/class/hour/statistics',
+  //   name: 'class.hour.statistics',
+  //   icon: 'CarryOutOutlined',
+  //   component: './ClassHourStatistics',
+  // },
+  // {
+  //   path: '/actions',
+  //   name: 'actions',
+  //   icon: 'EyeOutlined',
+  //   component: './Actions',
+  // },
+
 ];

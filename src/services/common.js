@@ -7,7 +7,7 @@ export const getChatGptProcess = (
 ) => {
   axios({
     method: 'post',
-    url: 'https://api.os2edu.cn/api/chat-process',
+    url: 'http://chatgpt4.maodouketang.com/api/chat-process',
     data: {
       prompt: prompt,
       options: {

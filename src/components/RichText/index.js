@@ -4,6 +4,7 @@ import { fileUpload } from '@/utils';
 import ReactQuill, { Quill } from 'react-quill';
 import ImageResize from 'quill-image-resize-module-zzone';
 import { base64ToFile, isHTML } from './util';
+import 'react-quill/dist/quill.snow.css';
 
 Quill.register('modules/imageResize', ImageResize);
 

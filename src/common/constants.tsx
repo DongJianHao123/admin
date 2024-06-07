@@ -154,4 +154,4 @@ export const tags = [
 
 export const PhoneRegex = /^(\+86|86)?1[3-9]\d{9}$|^(\+886|0)9\d{8}$/;
 
-export const EmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+export const EmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

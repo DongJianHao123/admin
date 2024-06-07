@@ -331,7 +331,7 @@ const ClassroomEdit = () => {
         <ProFormTextArea
           name="remark"
           label="备注"
-          colProps={{ md: 24, xl: 24 }}
+          colProps={{ md: 24, xl: 12 }}
           required
           placeholder="请输入"
           rules={requiredRule}

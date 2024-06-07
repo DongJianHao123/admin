@@ -160,6 +160,7 @@ const OperateEmail = () => {
           <ProFormTextArea
             fieldProps={{
               showCount: true,
+              autoSize: { maxRows: 10, minRows: 6 }
             }}
             rules={[{ required: true, message: '邮箱不能为空' }]}
             width="lg"

@@ -9,6 +9,7 @@ import {
   updateCourse,
 } from '@/services/course';
 import { fileUpload, requiredRule } from '@/utils';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import {
   DrawerForm,
   PageContainer,
@@ -27,6 +28,7 @@ import {
   Col,
   Drawer,
   Form,
+  Modal,
   Popconfirm,
   Row,
   Space,
@@ -97,18 +99,27 @@ const CourseEdit = () => {
   };
 
   const copyCourse = () => {
-    runFac().then((courseAmount) => {
-      const data = form.getFieldsValue();
-      delete data.id;
-      data.coverUrl = data.coverUrl[0].url
-      data.courseId = 100 + +courseAmount + 1
-      console.log(data);
-      createCourse(data).then(() => {
-        message.success(`拷贝成功`);
-        history.back();
-      })
-    }
-    );
+    Modal.confirm({
+      icon: <ExclamationCircleOutlined />,
+      content: '确定要拷贝本课程吗',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        runFac().then((courseAmount) => {
+          const data = form.getFieldsValue();
+          delete data.id;
+          data.coverUrl = data.coverUrl[0].url
+          data.courseId = 100 + +courseAmount + 1
+          console.log(data);
+          createCourse(data).then(() => {
+            message.success(`拷贝成功`);
+            history.back();
+          })
+        }
+        );
+      }
+    });
+
 
   }
 
@@ -151,9 +162,9 @@ const CourseEdit = () => {
                 <Col span={14} offset={4}>
                   <Space>
                     {doms}
-                    {!isAdd && <Button type='primary' onClick={copyCourse}>拷贝课程</Button>}
                   </Space>
                 </Col>
+                {!isAdd && <Button type='primary' onClick={copyCourse}>拷贝课程</Button>}
               </Row>
             );
           },
